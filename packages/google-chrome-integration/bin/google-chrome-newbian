@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Google Chrome Hardware-Accelerated Wayland Launcher
+# Enables Widevine DRM, VAAPI hardware video decoding, and native Wayland
+# ==============================================================================
+
+set -eo pipefail
+
+CHROME_BIN=""
+for bin in "/opt/google/chrome/google-chrome" "/usr/bin/google-chrome-stable" "/usr/bin/google-chrome" "/usr/bin/chromium"; do
+    if [[ -x "$bin" ]]; then
+        CHROME_BIN="$bin"
+        break
+    fi
+done
+
+# High Performance Wayland & Hardware Acceleration Flags
+FLAGS=(
+    "--ozone-platform-hint=auto"
+    "--enable-features=UseOzonePlatform,WaylandWindowDecorations,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,CanvasOopRasterization,RawDraw"
+    "--enable-gpu-rasterization"
+    "--enable-zero-copy"
+    "--enable-hardware-overlays"
+    "--enable-native-gpu-memory-buffers"
+    "--ignore-gpu-blocklist"
+    "--disable-features=UseChromeOSDirectVideoDecoder"
+)
+
+# PipeWire WebRTC screen sharing support
+FLAGS+=(
+    "--enable-webrtc-pipewire-capturer"
+)
+
+if [[ -n "$CHROME_BIN" ]]; then
+    exec "$CHROME_BIN" "${FLAGS[@]}" "$@"
+else
+    echo "Google Chrome binary not found in standard paths. Falling back to default browser."
+    if command -v x-www-browser &>/dev/null; then
+        exec x-www-browser "$@"
+    else
+        echo "Please install google-chrome-stable from the NewbianOS repository."
+        exit 1
+    fi
+fi

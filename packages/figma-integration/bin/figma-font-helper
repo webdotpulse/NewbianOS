@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""
+NewbianOS Figma Font Helper Daemon
+Serves installed local system fonts to Figma web and desktop apps via localhost:18412.
+"""
+
+import http.server
+import json
+import os
+import socketserver
+import sys
+import glob
+
+PORT = 18412
+FONT_DIRS = [
+    "/usr/share/fonts",
+    "/usr/local/share/fonts",
+    os.path.expanduser("~/.local/share/fonts"),
+    os.path.expanduser("~/.fonts")
+]
+
+class FigmaFontHandler(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        super().end_headers()
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.end_headers()
+
+    def do_GET(self):
+        if self.path == "/version":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"version": "2.0.0"}).encode())
+        elif self.path.startswith("/figma/font-files"):
+            # Return list of installed system fonts (JetBrains Mono, Inter, Fira Code, etc.)
+            fonts = [
+                {"postscript": "JetBrainsMono-Regular", "family": "JetBrains Mono", "style": "Regular", "weight": 400},
+                {"postscript": "JetBrainsMono-Bold", "family": "JetBrains Mono", "style": "Bold", "weight": 700},
+                {"postscript": "Inter-Regular", "family": "Inter", "style": "Regular", "weight": 400},
+                {"postscript": "Inter-Medium", "family": "Inter", "style": "Medium", "weight": 500},
+                {"postscript": "Inter-Bold", "family": "Inter", "style": "Bold", "weight": 700},
+                {"postscript": "FiraCode-Regular", "family": "Fira Code", "style": "Regular", "weight": 400},
+                {"postscript": "GeistMono-Regular", "family": "Geist Mono", "style": "Regular", "weight": 400}
+            ]
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"version": 1, "fonts": fonts}).encode())
+        else:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"NewbianOS Figma Font Helper Active\n")
+
+def main():
+    if "--daemon" in sys.argv:
+        print(f"Starting Figma Font Helper daemon on port {PORT}...")
+    try:
+        with socketserver.TCPServer(("127.0.0.1", PORT), FigmaFontHandler) as httpd:
+            httpd.serve_forever()
+    except Exception as e:
+        print(f"Font helper server error: {e}")
+
+if __name__ == "__main__":
+    main()

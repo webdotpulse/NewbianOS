@@ -1,0 +1,57 @@
+# ==============================================================================
+# NewbianOS AI & Developer Toolchain Package List
+# ==============================================================================
+
+# Core Build & Compilers
+build-essential
+cmake
+ninja-build
+clang
+llvm
+pkg-config
+libssl-dev
+zlib1g-dev
+
+# Languages & Runtimes
+python3
+python3-pip
+python3-venv
+python3-full
+python3-dev
+pipx
+golang-go
+rustc
+cargo
+nodejs
+npm
+
+# Version Control & Terminal Power Tools
+git
+git-lfs
+git-delta
+zsh
+tmux
+neovim
+ripgrep
+fd-find
+bat
+fzf
+zoxide
+eza
+btop
+htop
+jq
+curl
+wget
+tree
+unzip
+tar
+rsync
+
+# Cloud, Containers & Orchestration
+docker.io
+docker-compose-v2
+podman
+fuse3
+rclone
+google-drive-ocamlfuse

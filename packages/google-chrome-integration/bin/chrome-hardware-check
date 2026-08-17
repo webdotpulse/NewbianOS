@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Hardware Acceleration Diagnostics for Google Chrome
+# ==============================================================================
+
+echo "========================================================"
+echo "⚡ NewbianOS Hardware Video Acceleration Diagnostic"
+echo "========================================================"
+
+echo -n "Checking VA-API driver (vainfo)... "
+if command -v vainfo &>/dev/null; then
+    echo "INSTALLED"
+    vainfo 2>&1 | head -n 12
+else
+    echo "vainfo not installed. Run 'sudo apt install vainfo'."
+fi
+
+echo ""
+echo -n "Checking Vulkan driver (vulkaninfo)... "
+if command -v vulkaninfo &>/dev/null; then
+    echo "INSTALLED"
+    vulkaninfo --summary 2>&1 | head -n 10
+else
+    echo "vulkan-tools not installed."
+fi
+
+echo ""
+echo "Widevine DRM Status: Supported via official Google Chrome Stable package."
+echo "Wayland Status: $XDG_SESSION_TYPE (Compositor: ${WAYLAND_DISPLAY:-X11})"

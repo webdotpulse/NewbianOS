@@ -1,0 +1,22 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=all/allfiles;inode/directory;
+Actions=gdrive-sync-now;gdrive-share-link;gdrive-open-web;
+X-KDE-Priority=TopLevel
+X-KDE-Submenu=Google Drive
+
+[Desktop Action gdrive-sync-now]
+Name=Sync with Google Drive Now
+Icon=view-refresh
+Exec=gdrive sync
+
+[Desktop Action gdrive-share-link]
+Name=Copy Google Drive Share Link
+Icon=edit-copy
+Exec=gdrive share-link "%f"
+
+[Desktop Action gdrive-open-web]
+Name=Open in Google Drive Web
+Icon=internet-web-browser
+Exec=xdg-open "https://drive.google.com"

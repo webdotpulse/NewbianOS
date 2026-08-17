@@ -1,0 +1,18 @@
+#!/bin/sh
+# ==============================================================================
+# Chroot Hook: Setup Calamares Installer Branding & Icons
+# ==============================================================================
+
+set -e
+
+echo "⚡ [NewbianOS Hook] Integrating Calamares installer assets..."
+
+mkdir -p /etc/calamares/branding/newbianos
+mkdir -p /usr/share/calamares/branding/newbianos
+
+# Copy branding assets if present
+if [ -d /usr/share/newbian/installer/branding/newbianos ]; then
+    cp -r /usr/share/newbian/installer/branding/newbianos/* /etc/calamares/branding/newbianos/ 2>/dev/null || true
+fi
+
+echo "✓ Calamares configured."

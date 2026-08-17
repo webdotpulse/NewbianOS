@@ -1,0 +1,35 @@
+# ==============================================================================
+# NewbianOS Hardware Acceleration, Multimedia & Drivers Package List
+# ==============================================================================
+
+# Kernel Firmware
+firmware-linux-free
+firmware-linux-nonfree
+firmware-misc-nonfree
+intel-microcode
+amd64-microcode
+
+# Graphics Acceleration & Vulkan
+mesa-va-drivers
+mesa-vulkan-drivers
+vulkan-tools
+va-driver-all
+vainfo
+libgl1-mesa-dri
+libvulkan1
+
+# Audio & Video Stack (PipeWire)
+pipewire
+pipewire-audio
+pipewire-pulse
+pipewire-alsa
+wireplumber
+libspa-0.2-bluetooth
+gstreamer1.0-plugins-base
+gstreamer1.0-plugins-good
+gstreamer1.0-plugins-bad
+gstreamer1.0-plugins-ugly
+gstreamer1.0-libav
+v4l2loopback-dkms
+v4l-utils
+opencv-data

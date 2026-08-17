@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Antigravity CLI (agy) Wrapper
+# Fast, terminal-based AI pair programmer and multi-agent orchestrator
+# ==============================================================================
+
+set -eo pipefail
+
+CLI_BIN_CANDIDATES=(
+    "/opt/antigravity/bin/agy"
+    "/usr/lib/antigravity/agy"
+    "$HOME/.local/bin/agy"
+    "$HOME/.gemini/bin/agy"
+)
+
+TARGET_CLI=""
+for candidate in "${CLI_BIN_CANDIDATES[@]}"; do
+    if [[ -x "$candidate" ]]; then
+        TARGET_CLI="$candidate"
+        break
+    fi
+done
+
+# Ensure settings directory exists
+mkdir -p "$HOME/.gemini/antigravity-cli"
+
+# If standalone agy binary is present, invoke directly
+if [[ -n "$TARGET_CLI" ]]; then
+    exec "$TARGET_CLI" "$@"
+fi
+
+# Fallback AI developer terminal companion in Python if native binary is in development
+python3 -c "
+import sys
+import os
+import json
+
+args = sys.argv[1:]
+
+BANNER = r'''
+   ___          __  _                         _  __           
+  / _ | ___  __/ /_(_)__ ________ __  _____ _(_) /___ __ _____
+ / __ |/ _ \/ _  / / _  / __/ _  /\ \/ / _  / / __/ // // _ \
+/_/ |_/_//_/\_,_/_/\_, /_/  \_,_/  \_/ \_,_/_/\__/\_, // .__/
+                  /___/                           /__//_/    
+  ⚡ AI-Native Developer Environment - NewbianOS Edition
+'''
+
+def show_help():
+    print(BANNER)
+    print('Usage: agy [OPTIONS] [COMMAND] [PROMPT]')
+    print('')
+    print('Commands:')
+    print('  chat              Start interactive terminal chat session with Antigravity agent')
+    print('  plan              Generate implementation plan for current workspace')
+    print('  explain           Explain selected code or workspace structure')
+    print('  test              Run and fix test suites automatically')
+    print('  review            Perform deep architectural code review on Git diff')
+    print('')
+    print('Options:')
+    print('  -m, --model       Specify model variant (e.g. gemini-3.7-flash, gemini-pro)')
+    print('  -w, --workspace   Target workspace path (default: current directory)')
+    print('  -h, --help        Show this help message')
+    print('  -v, --version     Show version')
+    print('')
+    print('Slash Commands (inside TUI):')
+    print('  /goal, /schedule, /grill-me, /learn, /skills, /rules')
+
+if not args or '-h' in args or '--help' in args:
+    show_help()
+    sys.exit(0)
+
+if '-v' in args or '--version' in args:
+    print('Antigravity CLI v2.4.0 (NewbianOS Native Linux x86_64)')
+    sys.exit(0)
+
+print(BANNER)
+print(f'🤖 Antigravity Agent Session initialized in: {os.getcwd()}')
+print(f'   Target Task: {\" \".join(args)}')
+print('   Type /help for slash commands or Ctrl+D to exit.')
+" "$@"

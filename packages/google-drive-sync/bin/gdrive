@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Google Drive CLI Executable
+# ==============================================================================
+
+export PYTHONPATH="/usr/lib/newbian/gdrive:/home/koen/git/NewbianOS/packages/google-drive-sync:$PYTHONPATH"
+exec python3 -m gdrive.cli "$@"

@@ -1,0 +1,30 @@
+#!/bin/sh
+# ==============================================================================
+# NewbianOS Live-Build Auto Config
+# Target: Debian 13 (Trixie) + KDE Plasma 6 + Wayland + AI Developer Stack
+# ==============================================================================
+
+set -e
+
+lb config noauto \
+    --mode debian \
+    --distribution trixie \
+    --architectures amd64 \
+    --archive-areas "main contrib non-free non-free-firmware" \
+    --linux-flavours amd64 \
+    --linux-packages "linux-image linux-headers" \
+    --bootloader grub-efi \
+    --binary-images iso-hybrid \
+    --iso-application "NewbianOS Developer Edition" \
+    --iso-preparer "NewbianOS Core Engineering Team" \
+    --iso-publisher "https://newbianos.org" \
+    --iso-volume "NEWBIAN_13_DEV" \
+    --memtest none \
+    --win32-loader false \
+    --apt-recommends true \
+    --apt-secure true \
+    --system systemd \
+    --security true \
+    --updates true \
+    --backports true \
+    "${@}"

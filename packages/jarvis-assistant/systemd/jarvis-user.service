@@ -1,0 +1,16 @@
+[Unit]
+Description=Jarvis Multimodal AI Voice & Vision User Agent
+Documentation=https://newbianos.org/docs/jarvis
+After=pipewire.service wireplumber.service graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/jarvisd
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+Environment=OZONE_PLATFORM=wayland
+
+[Install]
+WantedBy=graphical-session.target

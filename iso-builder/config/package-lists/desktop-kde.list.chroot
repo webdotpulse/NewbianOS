@@ -1,0 +1,43 @@
+# ==============================================================================
+# NewbianOS KDE Plasma 6 Desktop Package List
+# ==============================================================================
+
+# Core Desktop & Display Server
+kde-plasma-desktop
+plasma-workspace
+plasma-workspace-wayland
+kwin-wayland
+sddm
+sddm-theme-breeze
+layer-shell-qt
+xdg-desktop-portal-kde
+plasma-nm
+plasma-pa
+powerdevil
+polkit-kde-agent-1
+systemsettings
+breeze-icon-theme
+plasma-widgets-addons
+
+# KDE Core Utilities
+dolphin
+dolphin-plugins
+kio-extras
+konsole
+kate
+kwrite
+ark
+spectacle
+gwenview
+okular
+kcalc
+plasma-systemmonitor
+
+# Look & Feel / Theming
+qt6-style-kvantum
+qt6-style-kvantum-themes
+fonts-inter
+fonts-jetbrains-mono
+fonts-firacode
+fonts-roboto
+fonts-noto-color-emoji

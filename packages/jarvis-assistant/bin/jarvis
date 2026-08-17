@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Jarvis CLI Executable
+# ==============================================================================
+
+export PYTHONPATH="/usr/lib/newbian/jarvis:/home/koen/git/NewbianOS/packages/jarvis-assistant:$PYTHONPATH"
+exec python3 -m jarvis.cli.main "$@"

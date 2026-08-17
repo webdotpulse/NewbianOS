@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+<policyconfig>
+  <vendor>NewbianOS</vendor>
+  <vendor_url>https://newbianos.org/</vendor_url>
+  <icon_name>system-run</icon_name>
+
+  <action id="com.newbianos.jarvis.system-control">
+    <description>Jarvis AI Deep Operating System Authority</description>
+    <message>Authentication is required for Jarvis AI to execute privileged OS tasks</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/jarvisd</annotate>
+  </action>
+</policyconfig>

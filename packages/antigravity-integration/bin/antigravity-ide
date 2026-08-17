@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Antigravity-IDE System Launcher
+# Optimized for Wayland, PipeWire, and GPU Hardware Acceleration
+# ==============================================================================
+
+set -eo pipefail
+
+APP_NAME="antigravity-ide"
+BIN_CANDIDATES=(
+    "/opt/antigravity-ide/antigravity"
+    "/opt/antigravity-ide/bin/antigravity"
+    "/usr/lib/antigravity-ide/antigravity"
+    "/usr/local/bin/antigravity-app"
+    "$HOME/.local/share/antigravity-ide/antigravity"
+)
+
+# Detect primary binary executable
+TARGET_BIN=""
+for candidate in "${BIN_CANDIDATES[@]}"; do
+    if [[ -x "$candidate" ]]; then
+        TARGET_BIN="$candidate"
+        break
+    fi
+done
+
+# Hardware Acceleration and Wayland Flags
+FLAGS=(
+    "--ozone-platform-hint=auto"
+    "--enable-features=UseOzonePlatform,WaylandWindowDecorations,WebRTCPipeWireCapturer,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,CanvasOopRasterization"
+    "--enable-gpu-rasterization"
+    "--enable-zero-copy"
+    "--disable-features=UseChromeOSDirectVideoDecoder"
+    "--enable-native-gpu-memory-buffers"
+)
+
+# NVIDIA specific Wayland optimizations if driver is active
+if [[ -d "/proc/driver/nvidia" ]] || command -v nvidia-smi &>/dev/null; then
+    FLAGS+=(
+        "--enable-features=WaylandFractionalIfaceV1"
+        "--disable-gpu-sandbox"
+    )
+fi
+
+# Pre-set default Antigravity environment
+export AGY_ENABLE_HARDWARE_ACCELERATION=1
+export AGY_DESKTOP_INTEGRATION=1
+export AGY_HOST_OS="NewbianOS-Debian13"
+export ELECTRON_OZONE_PLATFORM_HINT=auto
+
+if [[ -n "$TARGET_BIN" ]]; then
+    exec "$TARGET_BIN" "${FLAGS[@]}" "$@"
+else
+    # Mock / Fallback agent interface when standalone binary is compiling or in development
+    echo "⚡ Launching NewbianOS AI-Native Antigravity-IDE..."
+    if command -v code &>/dev/null; then
+        exec code "${FLAGS[@]}" "$@"
+    else
+        echo "Antigravity-IDE runtime ready. Please run 'agy' in your terminal for the CLI surface."
+        exit 0
+    fi
+fi

@@ -1,0 +1,10 @@
+{
+  "HardwareAccelerationModeEnabled": true,
+  "AutofillAddressEnabled": true,
+  "AutofillCreditCardEnabled": true,
+  "BrowserSignin": 1,
+  "SyncDisabled": false,
+  "DefaultBrowserSettingEnabled": true,
+  "DeveloperToolsAvailability": 1,
+  "SpellcheckEnabled": true
+}

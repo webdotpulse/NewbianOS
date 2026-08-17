@@ -1,0 +1,25 @@
+#!/bin/sh
+# ==============================================================================
+# Chroot Hook: Setup Desktop Defaults, Permissions & Mime Types
+# ==============================================================================
+
+set -e
+
+echo "⚡ [NewbianOS Hook] Finalizing desktop integration, permissions and MIME database..."
+
+# Update desktop and mime databases
+update-desktop-database /usr/share/applications 2>/dev/null || true
+update-mime-database /usr/share/mime 2>/dev/null || true
+
+# Set permissions for executables
+chmod +x /usr/bin/antigravity-ide 2>/dev/null || true
+chmod +x /usr/bin/agy 2>/dev/null || true
+chmod +x /usr/bin/jarvisd 2>/dev/null || true
+chmod +x /usr/bin/jarvis 2>/dev/null || true
+chmod +x /usr/bin/jarvis-hud 2>/dev/null || true
+chmod +x /usr/bin/google-chrome-newbian 2>/dev/null || true
+chmod +x /usr/bin/gdrive 2>/dev/null || true
+chmod +x /usr/bin/figma-desktop 2>/dev/null || true
+chmod +x /usr/bin/figma-font-helper 2>/dev/null || true
+
+echo "✓ NewbianOS desktop initialization complete."

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Comment=NewbianOS NeoDark AI-Native Plasma Look and Feel Theme
+Encoding=UTF-8
+Keywords=Desktop;Workspace;Appearance;Look and Feel;Newbian;Jarvis;
+Name=Newbian NeoDark
+Type=Service
+X-KDE-PluginInfo-Author=NewbianOS Core Team
+X-KDE-PluginInfo-Email=team@newbianos.org
+X-KDE-PluginInfo-License=GPLv3
+X-KDE-PluginInfo-Name=org.newbianos.neodark.desktop
+X-KDE-PluginInfo-Version=2.0
+X-KDE-PluginInfo-Website=https://newbianos.org
+X-KDE-ServiceTypes=Plasma/LookAndFeel
+X-Plasma-MainScript=defaults

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Figma Desktop Launcher
+# Wayland Hardware Accelerated with Local Font Helper Daemon
+# ==============================================================================
+
+set -eo pipefail
+
+FIGMA_BINS=(
+    "/opt/figma-linux/figma-linux"
+    "/usr/bin/figma-linux"
+    "/usr/local/bin/figma"
+    "$HOME/.local/bin/figma"
+)
+
+TARGET_FIGMA=""
+for b in "${FIGMA_BINS[@]}"; do
+    if [[ -x "$b" ]]; then
+        TARGET_FIGMA="$b"
+        break
+    fi
+done
+
+# Ensure font helper is running
+if ! pgrep -f figma-font-helper &>/dev/null; then
+    if command -v figma-font-helper &>/dev/null; then
+        figma-font-helper --daemon &
+    fi
+fi
+
+FLAGS=(
+    "--ozone-platform-hint=auto"
+    "--enable-features=UseOzonePlatform,WaylandWindowDecorations,CanvasOopRasterization,VaapiVideoDecodeLinuxGL"
+    "--enable-gpu-rasterization"
+    "--enable-zero-copy"
+)
+
+if [[ -n "$TARGET_FIGMA" ]]; then
+    exec "$TARGET_FIGMA" "${FLAGS[@]}" "$@"
+else
+    # Fallback to Figma Web App in Chrome app window
+    if command -v google-chrome-newbian &>/dev/null; then
+        exec google-chrome-newbian --app=https://www.figma.com "$@"
+    elif command -v google-chrome &>/dev/null; then
+        exec google-chrome --app=https://www.figma.com "$@"
+    else
+        echo "Launching Figma web interface..."
+        xdg-open "https://www.figma.com"
+    fi
+fi

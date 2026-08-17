@@ -1,0 +1,37 @@
+[Compositing]
+AnimationSpeed=2
+Backend=OpenGL
+GLCore=true
+HiddenPreviews=5
+OpenGLIsUnsafe=false
+WindowsBlockCompositing=false
+
+[Effect-blur]
+BlurStrength=12
+NoiseStrength=4
+
+[Desktops]
+Number=4
+Rows=1
+
+[Plugins]
+blurEnabled=true
+contrastEnabled=true
+slideEnabled=true
+overviewEnabled=true
+kwin4_effect_translucencyEnabled=true
+
+[Wayland]
+InputMethod=/usr/share/applications/org.fcitx.Fcitx5.desktop
+VirtualKeyboardEnabled=true
+
+[ModifierOnlyShortcuts]
+Meta=org.kde.plasmashell,/PlasmaShell,org.kde.PlasmaShell,activateLauncherMenu
+
+[GlobalShortcuts]
+jarvis_hud=Meta+Space,none,Toggle Jarvis Multimodal Holographic HUD
+antigravity_ide=Meta+A,none,Launch Antigravity-IDE
+konsole_dev=Meta+T,none,Open Developer Terminal
+dolphin_files=Meta+E,none,Open Dolphin Files
+chrome_browser=Meta+C,none,Open Google Chrome
+figma_app=Meta+F,none,Open Figma

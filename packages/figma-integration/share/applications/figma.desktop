@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Figma
+GenericName=Interface Design Tool
+Comment=Collaborative design and prototyping platform with local font integration
+Exec=figma-desktop %u
+Terminal=false
+Type=Application
+Icon=figma
+Categories=Graphics;2DGraphics;VectorGraphics;Development;
+MimeType=application/x-figma;application/figma;x-scheme-handler/figma;
+StartupWMClass=Figma

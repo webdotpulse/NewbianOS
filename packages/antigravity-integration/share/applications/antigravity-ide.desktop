@@ -1,0 +1,27 @@
+[Desktop Entry]
+Name=Antigravity IDE
+GenericName=AI-Native Development Environment
+Comment=Code, architect, and orchestrate software with built-in AI agents
+Exec=antigravity-ide %F
+Icon=antigravity-ide
+Type=Application
+StartupNotify=true
+StartupWMClass=antigravity-ide
+Categories=Development;IDE;TextEditor;Utility;
+MimeType=text/plain;inode/directory;application/x-code-workspace;
+Actions=NewWindow;NewAgentSession;OpenConfig;
+
+[Desktop Action NewWindow]
+Name=New Empty Window
+Exec=antigravity-ide --new-window %F
+Icon=window-new
+
+[Desktop Action NewAgentSession]
+Name=New AI Agent Task
+Exec=antigravity-ide --new-agent-session
+Icon=system-run
+
+[Desktop Action OpenConfig]
+Name=Open Antigravity Settings
+Exec=antigravity-ide ~/.gemini/
+Icon=configure

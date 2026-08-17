@@ -1,0 +1,25 @@
+{
+  "theme": "newbian-dark-neon",
+  "telemetry": false,
+  "model": "gemini-3.7-flash",
+  "planningMode": true,
+  "hardwareAcceleration": true,
+  "wayland": {
+    "ozonePlatformHint": "auto",
+    "pipewireCapturer": true
+  },
+  "defaultTerminals": {
+    "linux": "/usr/bin/zsh"
+  },
+  "keybindings": {
+    "toggleAgent": "Ctrl+Shift+A",
+    "triggerJarvisVoice": "Super+Space",
+    "quickDiff": "Ctrl+Alt+D"
+  },
+  "customizations": {
+    "roots": [
+      "/home/koen/.gemini/config",
+      ".agents"
+    ]
+  }
+}

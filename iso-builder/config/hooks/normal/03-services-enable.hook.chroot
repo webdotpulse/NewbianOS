@@ -1,0 +1,21 @@
+#!/bin/sh
+# ==============================================================================
+# Chroot Hook: Enable Core Systemd Services & Daemons
+# ==============================================================================
+
+set -e
+
+echo "⚡ [NewbianOS Hook] Enabling core system services..."
+
+systemctl enable sddm.service || true
+systemctl enable NetworkManager.service || true
+systemctl enable docker.service || true
+systemctl enable systemd-timesyncd.service || true
+
+# Enable user services globally
+mkdir -p /etc/systemd/user/graphical-session.target.wants
+ln -sf /usr/lib/systemd/user/jarvis-user.service /etc/systemd/user/graphical-session.target.wants/ 2>/dev/null || true
+ln -sf /usr/lib/systemd/user/newbian-gdrive.service /etc/systemd/user/default.target.wants/ 2>/dev/null || true
+ln -sf /usr/lib/systemd/user/figma-font-helper.service /etc/systemd/user/default.target.wants/ 2>/dev/null || true
+
+echo "✓ Core services enabled."

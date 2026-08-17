@@ -1,0 +1,21 @@
+# ==============================================================================
+# NewbianOS Featured Applications Package List
+# ==============================================================================
+
+# Installer
+calamares
+calamares-settings-debian
+qml-module-qtquick2
+qml-module-qtquick-controls2
+qml-module-qtquick-layouts
+
+# System Services & Polkit
+policykit-1
+pkexec
+systemd-timesyncd
+network-manager
+network-manager-openvpn
+bluez
+bluez-tools
+brightnessctl
+pavucontrol

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xbel>
+<xbel xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks" xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info">
+  <bookmark href="file://$HOME">
+    <title>Home</title>
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <bookmark:icon name="user-home"/>
+      </metadata>
+    </info>
+  </bookmark>
+  <bookmark href="file://$HOME/GoogleDrive">
+    <title>Google Drive</title>
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <bookmark:icon name="folder-cloud"/>
+      </metadata>
+    </info>
+  </bookmark>
+  <bookmark href="file://$HOME/Projects">
+    <title>Projects &amp; Code</title>
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <bookmark:icon name="folder-development"/>
+      </metadata>
+    </info>
+  </bookmark>
+  <bookmark href="file://$HOME/Downloads">
+    <title>Downloads</title>
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <bookmark:icon name="folder-download"/>
+      </metadata>
+    </info>
+  </bookmark>
+</xbel>

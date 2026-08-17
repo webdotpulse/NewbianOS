@@ -1,0 +1,14 @@
+[Unit]
+Description=NewbianOS Google Drive FUSE Sync Service
+Documentation=https://newbianos.org/docs/gdrive
+After=network-online.target graphical-session.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/gdrive mount
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

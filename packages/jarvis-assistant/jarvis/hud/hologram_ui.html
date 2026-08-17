@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis Holographic HUD</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+    :root {
+      --neon-cyan: #00f0ff;
+      --neon-blue: #0077ff;
+      --neon-violet: #a855f7;
+      --neon-pink: #ff007f;
+      --glass-bg: rgba(6, 12, 28, 0.78);
+      --glass-border: rgba(0, 240, 255, 0.35);
+      --text-glow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);
+      --box-glow: 0 0 25px rgba(0, 240, 255, 0.25), inset 0 0 15px rgba(0, 240, 255, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, rgba(10, 25, 50, 0.4) 0%, rgba(2, 6, 18, 0.92) 100%);
+      font-family: 'JetBrains Mono', monospace;
+      color: #e2f1ff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    /* Grid Overlay */
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Top HUD Bar */
+    .hud-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      padding: 12px 24px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      box-shadow: var(--box-glow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--neon-cyan);
+      border-radius: 50%;
+      position: relative;
+      animation: rotate 6s linear infinite;
+    }
+
+    .brand-logo::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      box-shadow: var(--text-glow);
+    }
+
+    .brand-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-shadow: var(--text-glow);
+    }
+
+    .os-badge {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid var(--neon-cyan);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--neon-cyan);
+      font-weight: 600;
+    }
+
+    .system-vitals {
+      display: flex;
+      gap: 20px;
+      font-size: 12px;
+    }
+
+    .vital-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vital-value {
+      color: var(--neon-cyan);
+      font-weight: 700;
+    }
+
+    /* Main Center Visualizer */
+    .hud-main {
+      display: flex;
+      flex: 1;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+      padding: 20px 0;
+    }
+
+    /* Left Panel: Perception & Camera Tracking */
+    .panel-left, .panel-right {
+      width: 320px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--box-glow);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+      padding-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Target Reticle Viewport */
+    .reticle-viewport {
+      width: 100%;
+      height: 180px;
+      background: rgba(2, 10, 25, 0.85);
+      border: 1px dashed var(--neon-cyan);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .face-target {
+      position: absolute;
+      width: 60px;
+      height: 75px;
+      border: 2px solid var(--neon-cyan);
+      border-radius: 8px;
+      box-shadow: var(--text-glow);
+      transition: all 0.1s ease-out;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      left: 50%;
+    }
+
+    .face-target::before, .face-target::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-color: var(--neon-pink);
+    }
+    .face-target::before { top: -2px; left: -2px; border-top: 2px solid; border-left: 2px solid; }
+    .face-target::after { bottom: -2px; right: -2px; border-bottom: 2px solid; border-right: 2px solid; }
+
+    .gaze-indicator {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* Central Arc-Reactor Hologram */
+    .hologram-core {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .core-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed var(--neon-cyan);
+      box-shadow: var(--box-glow);
+    }
+
+    .ring-1 { width: 300px; height: 300px; animation: rotate 18s linear infinite; border-color: rgba(0, 240, 255, 0.4); }
+    .ring-2 { width: 240px; height: 240px; animation: rotate-rev 12s linear infinite; border-color: var(--neon-violet); border-style: dotted; }
+    .ring-3 { width: 170px; height: 170px; animation: pulse 3s ease-in-out infinite; border: 2px solid var(--neon-cyan); }
+    
+    .core-center {
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, #00f0ff 0%, #0055ff 70%, transparent 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 40px #00f0ff;
+      animation: pulse 1.8s ease-in-out infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .core-icon {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      color: #ffffff;
+      text-shadow: 0 0 15px #ffffff;
+    }
+
+    /* Waveform visualizer */
+    .waveform-container {
+      position: absolute;
+      bottom: 20px;
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+      height: 50px;
+    }
+
+    .wave-bar {
+      width: 6px;
+      height: 15px;
+      background: var(--neon-cyan);
+      border-radius: 3px;
+      box-shadow: var(--text-glow);
+      transition: height 0.05s ease;
+    }
+
+    /* Right Panel: OS Execution & Actions */
+    .action-btn {
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: #e2f1ff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .action-btn:hover {
+      background: rgba(0, 240, 255, 0.25);
+      border-color: var(--neon-cyan);
+      box-shadow: var(--text-glow);
+      transform: translateX(4px);
+    }
+
+    /* Bottom Subtitle / Speech Transcripts */
+    .hud-bottombar {
+      z-index: 10;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 16px 24px;
+      box-shadow: var(--box-glow);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .subtitle-label {
+      font-size: 11px;
+      color: var(--neon-cyan);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .subtitle-text {
+      font-size: 15px;
+      color: #ffffff;
+      line-height: 1.4;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+
+    .hud-input-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .hud-input {
+      flex: 1;
+      background: rgba(0, 20, 50, 0.6);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      padding: 10px 16px;
+      border-radius: 8px;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .hud-input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: var(--text-glow);
+    }
+
+    .hud-submit-btn {
+      background: var(--neon-cyan);
+      border: none;
+      color: #000a1a;
+      font-weight: 700;
+      padding: 0 20px;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      cursor: pointer;
+      box-shadow: var(--text-glow);
+      transition: all 0.2s;
+    }
+
+    .hud-submit-btn:hover {
+      background: #ffffff;
+      box-shadow: 0 0 20px #ffffff;
+    }
+
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes rotate-rev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.08); opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="grid-overlay"></div>
+
+  <!-- Top Bar -->
+  <div class="hud-topbar">
+    <div class="brand">
+      <div class="brand-logo"></div>
+      <div class="brand-title">JARVIS AI</div>
+      <div class="os-badge">NEWBIAN OS 13</div>
+    </div>
+    <div class="system-vitals">
+      <div class="vital-item">CPU: <span class="vital-value" id="cpu-val">12%</span></div>
+      <div class="vital-item">MEM: <span class="vital-value" id="mem-val">32%</span></div>
+      <div class="vital-item">GPU: <span class="vital-value" id="gpu-val">42°C</span></div>
+      <div class="vital-item">MODE: <span class="vital-value" style="color: #a855f7;">AUTONOMOUS</span></div>
+    </div>
+  </div>
+
+  <!-- Main View -->
+  <div class="hud-main">
+    <!-- Left: Vision & Perception -->
+    <div class="panel-left">
+      <div class="panel-title">
+        <span>Optical Perception</span>
+        <span style="color: #22c55e;">● LIVE</span>
+      </div>
+      <div class="reticle-viewport">
+        <div class="face-target" id="face-reticle"></div>
+      </div>
+      <div class="gaze-indicator">Target: <strong style="color: #fff;" id="target-state">User Detected (65cm)</strong></div>
+      <div class="gaze-indicator">Gaze: <span style="color: var(--neon-cyan);" id="gaze-state">Center Screen</span></div>
+      <div class="gaze-indicator">Active App: <span style="color: #fff;">Antigravity IDE</span></div>
+    </div>
+
+    <!-- Center: Arc-Reactor & Spectrum -->
+    <div class="hologram-core">
+      <div class="core-ring ring-1"></div>
+      <div class="core-ring ring-2"></div>
+      <div class="core-ring ring-3"></div>
+      <div class="core-center" onclick="triggerVoiceInput()">
+        <div class="core-icon">J</div>
+      </div>
+      <div class="waveform-container" id="waveform">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+    </div>
+
+    <!-- Right: OS Authority Actions -->
+    <div class="panel-right">
+      <div class="panel-title">
+        <span>Deep OS Authority</span>
+        <span style="color: var(--neon-violet);">POLKIT AUTH</span>
+      </div>
+      <button class="action-btn" onclick="sendCommand('Deploy docker containers')">
+        <span>⚡ Deploy Containers</span>
+        <span style="color: var(--neon-cyan);">→</span>
+      </button>
+      <button class="action-btn" onclick="sendCommand('Inspect active screen')">
+        <span>👁 Analyze Screen Context</span>
+        <span style="color: var(--neon-cyan);">→</span>
+      </button>
+      <button class="action-btn" onclick="sendCommand('System diagnostic check')">
+        <span>🛡 System Diagnostics</span>
+        <span style="color: var(--neon-cyan);">→</span>
+      </button>
+      <button class="action-btn" onclick="sendCommand('Sync Google Drive')">
+        <span>☁ Sync ~/GoogleDrive</span>
+        <span style="color: var(--neon-cyan);">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Subtitle & Input -->
+  <div class="hud-bottombar">
+    <div class="subtitle-label">Neural Audio & Vision Stream</div>
+    <div class="subtitle-text" id="subtitle-box">"Jarvis Multimodal Assistant active. Ready for voice, vision, or keyboard commands."</div>
+    <div class="hud-input-row">
+      <input type="text" class="hud-input" id="cli-input" placeholder="Ask Jarvis or execute system command (e.g. 'Deploy containers', 'Check vitals')..." />
+      <button class="hud-submit-btn" onclick="submitInput()">EXECUTE</button>
+    </div>
+  </div>
+
+  <script>
+    // Live UI simulation and IPC bridge
+    const faceReticle = document.getElementById('face-reticle');
+    const waveBars = document.querySelectorAll('.wave-bar');
+    const subtitleBox = document.getElementById('subtitle-box');
+    const cliInput = document.getElementById('cli-input');
+
+    let t = 0;
+    setInterval(() => {
+      t += 0.05;
+      // Face reticle smooth animation
+      const posX = 50 + 15 * Math.sin(t * 0.8);
+      const posY = 50 + 8 * Math.cos(t * 1.1);
+      faceReticle.style.left = `${posX}%`;
+      faceReticle.style.top = `${posY}%`;
+
+      // Audio waveform bars
+      waveBars.forEach((bar, idx) => {
+        const height = 10 + 35 * Math.abs(Math.sin(t * 3.5 + idx * 0.8));
+        bar.style.height = `${height}px`;
+      });
+    }, 50);
+
+    function triggerVoiceInput() {
+      subtitleBox.innerText = '"Listening via PipeWire neural audio stream..."';
+      setTimeout(() => {
+        subtitleBox.innerText = '"At your service. All NewbianOS systems are optimal."';
+      }, 1500);
+    }
+
+    function sendCommand(cmd) {
+      subtitleBox.innerText = `Executing OS task: "${cmd}"...`;
+      setTimeout(() => {
+        subtitleBox.innerText = `Task "${cmd}" executed successfully. Polkit authority verified.`;
+      }, 1000);
+    }
+
+    function submitInput() {
+      const val = cliInput.value.trim();
+      if (!val) return;
+      sendCommand(val);
+      cliInput.value = '';
+    }
+
+    cliInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitInput();
+    });
+  </script>
+</body>
+</html>

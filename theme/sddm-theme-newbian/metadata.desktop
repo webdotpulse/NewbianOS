@@ -1,0 +1,13 @@
+[SddmGreeterTheme]
+Name=Newbian NeoDark SDDM
+Description=Futuristic AI-native login screen with animated backdrop and Jarvis status
+Author=NewbianOS Core Team
+Copyright=(c) 2026 NewbianOS
+Version=2.0
+Website=https://newbianos.org
+Screenshot=preview.png
+MainScript=Main.qml
+ConfigFile=theme.conf
+TranslationsDirectory=translations
+Theme-Id=newbian-sddm
+Theme-API=2.0

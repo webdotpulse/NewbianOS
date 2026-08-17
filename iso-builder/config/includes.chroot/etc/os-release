@@ -1,0 +1,12 @@
+PRETTY_NAME="NewbianOS 13 (Nexus) Developer Edition"
+NAME="NewbianOS"
+VERSION_ID="13"
+VERSION="13 (Nexus)"
+VERSION_CODENAME=nexus
+ID=newbian
+ID_LIKE=debian
+HOME_URL="https://newbianos.org/"
+SUPPORT_URL="https://newbianos.org/support"
+BUG_REPORT_URL="https://newbianos.org/issues"
+AI_ASSISTANT="Jarvis Multimodal AI"
+DEFAULT_IDE="Antigravity-IDE"

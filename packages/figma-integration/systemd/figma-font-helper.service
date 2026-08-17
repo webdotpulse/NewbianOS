@@ -1,0 +1,13 @@
+[Unit]
+Description=Figma Local Font Helper Daemon
+Documentation=https://help.figma.com/hc/en-us/articles/360039956894-Access-local-fonts-on-your-computer
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/figma-font-helper --daemon
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

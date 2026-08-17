@@ -1,0 +1,37 @@
+# ==============================================================================
+# Calamares Branding Configuration for NewbianOS
+# ==============================================================================
+
+componentName:  newbianos
+welcomeStyleCalamares: false
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 980px,640px
+windowPlacement: center
+
+strings:
+    productName:         NewbianOS Developer Edition
+    shortProductName:    NewbianOS
+    version:             13.0 "Nexus"
+    shortVersion:        13.0
+    versionedName:       NewbianOS 13.0 Nexus
+    shortVersionedName:  NewbianOS 13.0
+    bootloaderEntryName: NewbianOS
+    productUrl:          https://newbianos.org/
+    supportUrl:          https://newbianos.org/support
+    knownIssuesUrl:      https://newbianos.org/issues
+    releaseNotesUrl:     https://newbianos.org/releases/13.0
+
+images:
+    productLogo:         "logo.png"
+    productIcon:         "icon.png"
+    productWelcome:      "welcome.png"
+
+style:
+   SidebarBackground:    "#060c1c"
+   SidebarText:          "#e2f1ff"
+   SidebarTextCurrent:   "#00f0ff"
+   SidebarBackgroundCurrent: "#0f1d3a"
+
+slideshow:               "slideshow/Slideshow.qml"
+slideshowAPI:            2
