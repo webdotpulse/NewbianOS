@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Install NewbianOS
+GenericName=Interactive System Installer
+Comment=Install NewbianOS 13 Nexus to your computer with custom developer presets and Btrfs
+Exec=newbian-installer
+Icon=system-software-install
+Terminal=false
+Type=Application
+Categories=System;
+StartupNotify=true

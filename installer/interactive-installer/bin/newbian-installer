@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Interactive System Installer Binary
+# ==============================================================================
+
+export PYTHONPATH="/usr/lib/newbian/installer:/home/koen/git/NewbianOS/installer/interactive-installer:$PYTHONPATH"
+exec python3 -m installer_app "$@"

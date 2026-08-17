@@ -84,6 +84,18 @@ cp "$ROOT_DIR/packages/figma-integration/bin/"* "$INCLUDES_ROOT/usr/bin/" 2>/dev
 cp "$ROOT_DIR/packages/figma-integration/share/applications/"* "$INCLUDES_ROOT/usr/share/applications/" 2>/dev/null || true
 cp "$ROOT_DIR/packages/figma-integration/systemd/"* "$INCLUDES_ROOT/usr/lib/systemd/user/" 2>/dev/null || true
 
+# Copy Interactive Installer & Branding
+mkdir -p "$INCLUDES_ROOT/usr/lib/newbian/installer"
+cp -r "$ROOT_DIR/installer/interactive-installer/"* "$INCLUDES_ROOT/usr/lib/newbian/installer/" 2>/dev/null || true
+cp "$ROOT_DIR/installer/interactive-installer/bin/"* "$INCLUDES_ROOT/usr/bin/" 2>/dev/null || true
+cp "$ROOT_DIR/installer/interactive-installer/share/applications/"* "$INCLUDES_ROOT/usr/share/applications/" 2>/dev/null || true
+
+# Copy Custom Graphics & Wallpapers
+mkdir -p "$INCLUDES_ROOT/usr/share/wallpapers/NewbianOS"
+mkdir -p "$INCLUDES_ROOT/usr/share/icons/hicolor/scalable/apps"
+cp "$ROOT_DIR/theme/wallpapers/"* "$INCLUDES_ROOT/usr/share/wallpapers/NewbianOS/" 2>/dev/null || true
+cp "$ROOT_DIR/theme/icons/"* "$INCLUDES_ROOT/usr/share/icons/hicolor/scalable/apps/" 2>/dev/null || true
+
 # Copy Theme & Skeleton
 cp -r "$ROOT_DIR/theme/skel/." "$INCLUDES_ROOT/etc/skel/" 2>/dev/null || true
 

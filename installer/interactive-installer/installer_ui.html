@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NewbianOS Nexus - Interactive Installer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+    :root {
+      --cyan: #00f0ff;
+      --blue: #0077ff;
+      --violet: #a855f7;
+      --pink: #ff007f;
+      --bg: #030712;
+      --glass-card: rgba(10, 18, 38, 0.85);
+      --border-color: rgba(0, 240, 255, 0.25);
+      --glow: 0 0 20px rgba(0, 240, 255, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at top center, rgba(15, 30, 65, 0.6) 0%, rgba(2, 5, 15, 0.96) 100%);
+      font-family: 'JetBrains Mono', monospace;
+      color: #e2f1ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .installer-container {
+      width: 980px;
+      height: 640px;
+      background: var(--glass-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: var(--glow), 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 280px;
+      background: rgba(4, 9, 24, 0.95);
+      border-right: 1px solid var(--border-color);
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--cyan);
+      border-radius: 50%;
+      position: relative;
+      animation: rotate 8s linear infinite;
+    }
+
+    .brand-logo::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--cyan);
+    }
+
+    .brand-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: 1.5px;
+      color: #ffffff;
+    }
+
+    .brand-subtitle {
+      font-size: 10px;
+      color: var(--cyan);
+      letter-spacing: 1px;
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: #64748b;
+      transition: all 0.3s;
+    }
+
+    .step-item.active {
+      color: var(--cyan);
+      font-weight: 700;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    }
+
+    .step-item.completed {
+      color: #22c55e;
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid currentColor;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 11px;
+    }
+
+    .step-item.active .step-number {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: var(--cyan);
+    }
+
+    .sidebar-footer {
+      font-size: 11px;
+      color: #475569;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 14px;
+    }
+
+    /* Main Content View */
+    .content-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 36px 40px;
+      position: relative;
+    }
+
+    .view-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .view-header p {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .view-body {
+      flex: 1;
+      padding: 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    /* Presets & Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .preset-card {
+      background: rgba(15, 28, 55, 0.6);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      padding: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .preset-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.2);
+    }
+
+    .preset-card.selected {
+      border-color: var(--cyan);
+      background: rgba(0, 240, 255, 0.12);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+    }
+
+    .preset-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .preset-desc {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* Form Controls */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cyan);
+    }
+
+    .form-input, .form-select {
+      background: rgba(6, 12, 28, 0.8);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 12px 14px;
+      border-radius: 8px;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+
+    /* Progress & Logs */
+    .progress-bar-container {
+      width: 100%;
+      height: 12px;
+      background: rgba(10, 20, 40, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      box-shadow: 0 0 15px var(--cyan);
+      transition: width 0.3s ease;
+    }
+
+    .terminal-log {
+      width: 100%;
+      height: 200px;
+      background: #020612;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 11px;
+      color: #38bdf8;
+      overflow-y: auto;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Buttons */
+    .view-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      color: #020817;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: #ffffff;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
+      transform: translateY(-1px);
+    }
+
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="installer-container">
+  <!-- Left Step Navigation -->
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-logo"></div>
+      <div>
+        <div class="brand-title">NEWBIAN OS</div>
+        <div class="brand-subtitle">NEXUS INSTALLER 13.0</div>
+      </div>
+    </div>
+
+    <div class="step-list">
+      <div class="step-item active" id="step-nav-1"><div class="step-number">1</div><span>System Check</span></div>
+      <div class="step-item" id="step-nav-2"><div class="step-number">2</div><span>Developer Stack</span></div>
+      <div class="step-item" id="step-nav-3"><div class="step-number">3</div><span>Disk & Btrfs</span></div>
+      <div class="step-item" id="step-nav-4"><div class="step-number">4</div><span>Jarvis AI Setup</span></div>
+      <div class="step-item" id="step-nav-5"><div class="step-number">5</div><span>User Account</span></div>
+      <div class="step-item" id="step-nav-6"><div class="step-number">6</div><span>Deploy OS</span></div>
+    </div>
+
+    <div class="sidebar-footer">
+      Debian 13 • Linux 7.x+ • KDE Plasma 6
+    </div>
+  </div>
+
+  <!-- Right Step Content -->
+  <div class="content-view">
+    <!-- Step 1: System Check -->
+    <div class="step-content" id="step-view-1">
+      <div class="view-header">
+        <h2>Welcome to NewbianOS</h2>
+        <p>Verifying target hardware, UEFI firmware, and Linux Kernel 7.x+ compatibility.</p>
+      </div>
+      <div class="view-body">
+        <div class="preset-card selected">
+          <div class="preset-title"><span>⚡ Hardware Detected</span><span style="color: #22c55e;">COMPLIANT</span></div>
+          <div class="preset-desc" id="hw-specs">
+            • Linux Kernel: 7.1.3+ (PREEMPT_DYNAMIC)<br>
+            • Firmware: UEFI (x86_64 OVMF)<br>
+            • Memory: 16.0 GB RAM<br>
+            • Desktop Session: KDE Plasma 6 Wayland Native<br>
+            • AI Toolchain: Antigravity-IDE & Jarvis Daemon Out-of-the-Box
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Stack Preset -->
+    <div class="step-content" id="step-view-2" style="display: none;">
+      <div class="view-header">
+        <h2>Select Developer Flavor</h2>
+        <p>Choose pre-installed toolchains and developer environments.</p>
+      </div>
+      <div class="view-body card-grid">
+        <div class="preset-card selected" onclick="selectPreset(this, 'full-ai')">
+          <div class="preset-title"><span>Full AI Suite</span><span>★ DEFAULT</span></div>
+          <div class="preset-desc">Antigravity-IDE, Jarvis Assistant, Node 22, Python 3.13, Docker CE, Chrome, Google Drive, and Figma.</div>
+        </div>
+        <div class="preset-card" onclick="selectPreset(this, 'systems')">
+          <div class="preset-title"><span>Systems & Kernel</span></div>
+          <div class="preset-desc">Clang/LLVM, Rust, Go, QEMU/KVM, eBPF tools, GDB, Valgrind, and Neovim.</div>
+        </div>
+        <div class="preset-card" onclick="selectPreset(this, 'cloud')">
+          <div class="preset-title"><span>Cloud Native</span></div>
+          <div class="preset-desc">Kubectl, Minikube, Helm, Terraform, Podman, Docker Compose, AWS/GCP CLIs.</div>
+        </div>
+        <div class="preset-card" onclick="selectPreset(this, 'minimal')">
+          <div class="preset-title"><span>Minimal AI Core</span></div>
+          <div class="preset-desc">Antigravity CLI (agy), Jarvis Daemon, Starship Zsh terminal, lightweight footprint.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Disk Partitioning -->
+    <div class="step-content" id="step-view-3" style="display: none;">
+      <div class="view-header">
+        <h2>Storage & Partitioning</h2>
+        <p>Configured with high-speed Btrfs subvolumes and ZSTD transparent compression.</p>
+      </div>
+      <div class="view-body">
+        <div class="form-group">
+          <label class="form-label">Target Storage Device</label>
+          <select class="form-select" id="disk-select">
+            <option value="/dev/nvme0n1">Samsung SSD 990 PRO NVMe (1.0 TB)</option>
+            <option value="/dev/sda">Crucial MX500 SATA SSD (500 GB)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Filesystem Structure</label>
+          <div class="preset-card selected">
+            <div class="preset-title"><span>Btrfs with Subvolumes (@root, @home)</span><span style="color: var(--cyan);">OPTIMAL</span></div>
+            <div class="preset-desc">Enables instant snapshots, automatic zstd compression, and rollback safety.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Jarvis Setup -->
+    <div class="step-content" id="step-view-4" style="display: none;">
+      <div class="view-header">
+        <h2>Jarvis Multimodal Assistant</h2>
+        <p>Calibrate your on-device voice and optical vision perception daemon.</p>
+      </div>
+      <div class="view-body">
+        <div class="form-group">
+          <label class="form-label">Preferred Wake Word</label>
+          <input type="text" class="form-input" id="wake-word" value="Hey Jarvis" />
+        </div>
+        <div class="preset-card selected">
+          <div class="preset-title"><span>Optical Vision & Camera Tracking</span><span style="color: #22c55e;">ENABLED</span></div>
+          <div class="preset-desc">Face tracking reticle and PipeWire screen perception enabled with Polkit OS authority.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: User Account -->
+    <div class="step-content" id="step-view-5" style="display: none;">
+      <div class="view-header">
+        <h2>User Account & Machine</h2>
+        <p>Set up your primary developer credentials.</p>
+      </div>
+      <div class="view-body">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="user-fullname" value="Lead Developer" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-input" id="user-name" value="developer" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Computer Hostname</label>
+          <input type="text" class="form-input" id="user-hostname" value="newbian-nexus" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 6: Deploy Progress -->
+    <div class="step-content" id="step-view-6" style="display: none;">
+      <div class="view-header">
+        <h2 id="install-title">Deploying NewbianOS...</h2>
+        <p id="install-sub">Applying Debian 13 base, Kernel 7.x+, and AI developer stack.</p>
+      </div>
+      <div class="view-body">
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="prog-fill"></div>
+        </div>
+        <div class="terminal-log" id="term-log">
+          [0%] Initializing NewbianOS installation pipeline...
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Controls -->
+    <div class="view-footer">
+      <button class="btn btn-secondary" id="btn-back" onclick="prevStep()" style="visibility: hidden;">BACK</button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextStep()">CONTINUE →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 6;
+
+  function selectPreset(card, presetId) {
+    document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  }
+
+  function updateView() {
+    for (let i = 1; i <= totalSteps; i++) {
+      const view = document.getElementById(`step-view-${i}`);
+      const nav = document.getElementById(`step-nav-${i}`);
+      if (view) view.style.display = (i === currentStep) ? 'block' : 'none';
+      if (nav) {
+        nav.classList.remove('active', 'completed');
+        if (i === currentStep) nav.classList.add('active');
+        else if (i < currentStep) nav.classList.add('completed');
+      }
+    }
+
+    const backBtn = document.getElementById('btn-back');
+    const nextBtn = document.getElementById('btn-next');
+
+    backBtn.style.visibility = (currentStep > 1 && currentStep < 6) ? 'visible' : 'hidden';
+
+    if (currentStep === 5) {
+      nextBtn.innerText = 'INSTALL NEWBIAN OS ⚡';
+    } else if (currentStep === 6) {
+      nextBtn.style.display = 'none';
+      startInstallation();
+    } else {
+      nextBtn.innerText = 'CONTINUE →';
+    }
+  }
+
+  function nextStep() {
+    if (currentStep < totalSteps) {
+      currentStep++;
+      updateView();
+    }
+  }
+
+  function prevStep() {
+    if (currentStep > 1) {
+      currentStep--;
+      updateView();
+    }
+  }
+
+  function startInstallation() {
+    const fill = document.getElementById('prog-fill');
+    const log = document.getElementById('term-log');
+    const title = document.getElementById('install-title');
+    const sub = document.getElementById('install-sub');
+
+    const logs = [
+      "[5%] Partitioning target disk with Btrfs...",
+      "[15%] Creating subvolumes @root and @home with zstd compression...",
+      "[30%] Unpacking Debian 13 (Trixie) base root filesystem...",
+      "[45%] Installing Linux Kernel 7.1+ PREEMPT_DYNAMIC and firmware...",
+      "[60%] Installing KDE Plasma 6 Wayland desktop environment...",
+      "[75%] Pre-configuring Antigravity-IDE and developer runtime stack...",
+      "[85%] Enabling Jarvis Multimodal Voice & Vision daemon...",
+      "[92%] Configuring Native Google Drive workspace and Figma font daemon...",
+      "[98%] Installing GRUB-EFI Bootloader & Plymouth boot splash...",
+      "[100%] SUCCESS: NewbianOS 13 Nexus installed successfully!"
+    ];
+
+    let step = 0;
+    const interval = setInterval(() => {
+      if (step < logs.length) {
+        const percent = (step + 1) * 10;
+        fill.style.width = `${percent}%`;
+        log.innerHTML += `<br>${logs[step]}`;
+        log.scrollTop = log.scrollHeight;
+        step++;
+      } else {
+        clearInterval(interval);
+        title.innerText = "Installation Complete!";
+        sub.innerText = "Please reboot your computer to start using NewbianOS.";
+        const nextBtn = document.getElementById('btn-next');
+        nextBtn.style.display = 'block';
+        nextBtn.innerText = 'REBOOT NOW ⚡';
+        nextBtn.onclick = () => alert("Rebooting into NewbianOS 13 Nexus...");
+      }
+    }, 600);
+  }
+</script>
+</body>
+</html>

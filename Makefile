@@ -37,6 +37,7 @@ lint:
 	@bash -n packages/google-chrome-integration/bin/google-chrome-newbian
 	@bash -n packages/google-drive-sync/bin/gdrive
 	@bash -n packages/figma-integration/bin/figma-desktop
+	@bash -n installer/interactive-installer/bin/newbian-installer
 	@find iso-builder/config/hooks -name "*.hook.chroot" -exec bash -n {} +
 	@echo "✓ All scripts and hooks syntax verified!"
 
@@ -60,6 +61,7 @@ local-install:
 	ln -sf $(ROOT_DIR)/packages/google-drive-sync/bin/gdrive $(HOME)/.local/bin/
 	ln -sf $(ROOT_DIR)/packages/figma-integration/bin/figma-desktop $(HOME)/.local/bin/
 	ln -sf $(ROOT_DIR)/packages/figma-integration/bin/figma-font-helper $(HOME)/.local/bin/
+	ln -sf $(ROOT_DIR)/installer/interactive-installer/bin/newbian-installer $(HOME)/.local/bin/
 	@echo "✓ Linked all utilities to ~/.local/bin."
 
 clean:
