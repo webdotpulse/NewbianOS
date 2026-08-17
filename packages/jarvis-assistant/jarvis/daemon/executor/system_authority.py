@@ -11,14 +11,17 @@ import shutil
 import subprocess
 from typing import Any, Dict, List, Optional
 
+from jarvis.daemon.npu.manager import NPUManager
+
 logger = logging.getLogger("jarvis.executor")
 
 class SystemAuthorityExecutor:
     def __init__(self):
         self.polkit_action = "com.newbianos.jarvis.system-control"
+        self.npu_manager = NPUManager()
 
     async def get_hardware_telemetry(self) -> Dict[str, Any]:
-        """Fetch comprehensive system and hardware vitals."""
+        """Fetch comprehensive system, NPU and hardware vitals."""
         # CPU Usage & Frequency
         cpu_usage = 12.5
         try:
@@ -54,11 +57,15 @@ class SystemAuthorityExecutor:
         if os.path.exists("/proc/driver/nvidia"):
             gpu_info = {"type": "NVIDIA GeForce RTX", "driver": "nvidia", "temp_c": 48.0, "utilization_percent": 15}
 
+        # NPU Telemetry
+        npu_info = self.npu_manager.get_telemetry()
+
         return {
             "load_average": load,
             "cpu_percent": cpu_usage,
             "memory": mem_info,
             "gpu": gpu_info,
+            "npu": npu_info,
             "os": "NewbianOS 13 (Trixie) - KDE Plasma 6 Wayland",
             "kernel": os.uname().release,
             "hostname": os.uname().nodename

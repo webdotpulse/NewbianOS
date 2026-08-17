@@ -31,6 +31,11 @@ lint:
 	@bash -n scripts/test-vm.sh
 	@bash -n packages/antigravity-integration/bin/antigravity-ide
 	@bash -n packages/antigravity-integration/bin/agy
+	@bash -n packages/antigravity-integration/bin/newbian-rollback
+	@bash -n packages/antigravity-integration/bin/agy-swarm
+	@bash -n packages/antigravity-integration/bin/newbian-stream
+	@bash -n packages/antigravity-integration/bin/agy-box
+	@bash -n packages/antigravity-integration/bin/newbian-tpm-enclave
 	@bash -n packages/jarvis-assistant/bin/jarvisd
 	@bash -n packages/jarvis-assistant/bin/jarvis
 	@bash -n packages/jarvis-assistant/bin/jarvis-hud
@@ -54,6 +59,11 @@ local-install:
 	mkdir -p $(HOME)/.local/bin
 	ln -sf $(ROOT_DIR)/packages/antigravity-integration/bin/antigravity-ide $(HOME)/.local/bin/
 	ln -sf $(ROOT_DIR)/packages/antigravity-integration/bin/agy $(HOME)/.local/bin/
+	ln -sf $(ROOT_DIR)/packages/antigravity-integration/bin/newbian-rollback $(HOME)/.local/bin/
+	ln -sf $(ROOT_DIR)/packages/antigravity-integration/bin/agy-swarm $(HOME)/.local/bin/
+	ln -sf $(ROOT_DIR)/packages/antigravity-integration/bin/newbian-stream $(HOME)/.local/bin/
+	ln -sf $(ROOT_DIR)/packages/antigravity-integration/bin/agy-box $(HOME)/.local/bin/
+	ln -sf $(ROOT_DIR)/packages/antigravity-integration/bin/newbian-tpm-enclave $(HOME)/.local/bin/
 	ln -sf $(ROOT_DIR)/packages/jarvis-assistant/bin/jarvis $(HOME)/.local/bin/
 	ln -sf $(ROOT_DIR)/packages/jarvis-assistant/bin/jarvisd $(HOME)/.local/bin/
 	ln -sf $(ROOT_DIR)/packages/jarvis-assistant/bin/jarvis-hud $(HOME)/.local/bin/

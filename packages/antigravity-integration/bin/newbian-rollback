@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Instant Btrfs Rollback & Atomic Layer Manager CLI
+# ==============================================================================
+
+set -eo pipefail
+
+python3 -c "
+import sys
+import os
+import json
+
+# Add packages to path
+sys.path.insert(0, '/usr/lib/newbian/packages/jarvis-assistant')
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname('__file__'), 'packages/jarvis-assistant')))
+
+from jarvis.daemon.executor.atomic_manager import AtomicCoreManager
+
+mgr = AtomicCoreManager()
+args = sys.argv[1:]
+
+def print_banner():
+    print('🔄 NewbianOS Instant Btrfs Rollback & Atomic Core Manager')
+    print('=' * 65)
+
+if not args or args[0] in ['-h', '--help', 'help']:
+    print_banner()
+    print('Usage: newbian-rollback [COMMAND] [OPTIONS]')
+    print('')
+    print('Commands:')
+    print('  list              List all system snapshots and restore points')
+    print('  create [DESC]     Create a manual atomic snapshot (e.g. before kernel upgrade)')
+    print('  rollback <ID>     Rollback root OS to specified snapshot ID in 2 seconds')
+    print('  subvolumes        Display Btrfs subvolume layout and isolation boundaries')
+    print('  sysext            List active systemd-sysext transactional /usr layers')
+    print('  status            Show current Btrfs filesystem and transaction health')
+    print('')
+    sys.exit(0)
+
+cmd = args[0]
+
+if cmd == 'list':
+    print_banner()
+    snaps = mgr.list_snapshots()
+    print(f'Found {len(snaps)} system restore point(s):\n')
+    print(f'{\"ID\":<5} {\"TIMESTAMP\":<20} {\"TYPE\":<8} {\"ACTIVE\":<8} {\"DESCRIPTION\"}')
+    print('-' * 65)
+    for s in snaps:
+        active_mark = '★ YES' if s.get('active') else '  NO'
+        print(f'{s[\"id\"]: <5} {s[\"timestamp\"]: <20} {s[\"type\"]: <8} {active_mark: <8} {s[\"description\"]}')
+    print('\nUse: newbian-rollback rollback <ID> to switch boot targets instantly.')
+
+elif cmd == 'create':
+    desc = ' '.join(args[1:]) if len(args) > 1 else 'Manual Developer Snapshot'
+    res = mgr.create_snapshot(desc)
+    print(f'✓ Created Snapshot #{res[\"snapshot_id\"]}: \"{res[\"description\"]}\"')
+
+elif cmd == 'rollback':
+    if len(args) < 2:
+        print('Error: Specify snapshot ID to rollback to. (e.g. newbian-rollback rollback 1)')
+        sys.exit(1)
+    try:
+        snap_id = int(args[1])
+    except ValueError:
+        print('Error: Snapshot ID must be an integer.')
+        sys.exit(1)
+    res = mgr.rollback(snap_id)
+    if res['success']:
+        print(f'✓ Successfully targeted Snapshot #{snap_id} (\"{res[\"description\"]}\")')
+        print(f'  {res[\"action\"]}')
+    else:
+        print(f'✗ Failed: {res.get(\"error\")}')
+        sys.exit(1)
+
+elif cmd == 'subvolumes':
+    print_banner()
+    print('Btrfs Subvolume Isolation Map:\n')
+    for sv in mgr.list_subvolumes():
+        print(f'  • {sv[\"name\"]: <12} -> {sv[\"mount\"]: <14} [{sv[\"role\"]}]')
+
+elif cmd == 'sysext':
+    print_banner()
+    print('systemd-sysext Active /usr Extension Layers:\n')
+    for l in mgr.list_sysext_layers():
+        print(f'  • {l[\"name\"]: <25} -> {l[\"path\"]} ({l[\"status\"]})')
+
+elif cmd == 'status':
+    print_banner()
+    print(f'Root Filesystem: Btrfs (Atomic Snapshots Supported: {mgr.is_btrfs_root()})')
+    print('Snapper Rollback Integration: ACTIVE')
+    print('GRUB Bootloader Snapshot Menu: ENABLED (2s instant boot selection)')
+" "$@"

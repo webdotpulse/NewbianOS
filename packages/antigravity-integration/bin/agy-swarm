@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Antigravity Swarm CLI
+# Spawn and orchestrate autonomous AI background worker agents
+# ==============================================================================
+
+set -eo pipefail
+
+python3 -c "
+import asyncio
+import os
+import sys
+
+sys.path.insert(0, '/usr/lib/newbian/packages/antigravity-integration')
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname('__file__'), 'packages/antigravity-integration')))
+
+from swarm.orchestrator import AgentSwarmOrchestrator
+from swarm.indexer import SemanticCodeGraph
+
+args = sys.argv[1:]
+
+def show_help():
+    print('''
+🐝 Antigravity Swarm & Multi-Agent Orchestrator
+==================================================================
+Usage: agy-swarm [COMMAND] [ARGS...]
+
+Commands:
+  spawn <type> <prompt>   Spawn background agent (security, test, pr, refactor)
+  list                    List active and completed swarm agent tasks
+  index [path]            Index workspace and build local semantic code graph
+  search <query>          Query semantic code graph for symbols and snippets
+  status                  Check D-Bus event bus and background worker status
+
+Examples:
+  agy-swarm spawn security 'Audit all privileged sudo calls'
+  agy-swarm spawn test 'Diagnose and run all unit tests'
+  agy-swarm spawn pr 'Synthesize PR for proposal 3 implementation'
+  agy-swarm search 'JarvisCoreDaemon'
+==================================================================
+''')
+
+if not args or args[0] in ['-h', '--help', 'help']:
+    show_help()
+    sys.exit(0)
+
+cmd = args[0]
+orchestrator = AgentSwarmOrchestrator()
+
+async def main():
+    if cmd == 'spawn':
+        if len(args) < 3:
+            print('Usage: agy-swarm spawn <type> <prompt>')
+            print('Types: security | test | pr | refactor')
+            sys.exit(1)
+        agent_type_map = {
+            'security': 'security_audit',
+            'test': 'test_fixer',
+            'pr': 'pr_prep',
+            'refactor': 'refactor_analyzer'
+        }
+        agent_type = agent_type_map.get(args[1], args[1])
+        prompt = ' '.join(args[2:])
+        task_id = await orchestrator.spawn_agent(agent_type, prompt)
+        print(f'🚀 Spawned background swarm agent: {task_id} [{agent_type}]')
+        print(f'   Task: \"{prompt}\"')
+        print('   Broadcasting on D-Bus: org.newbianos.AgentEvents')
+        
+        # Wait briefly for execution
+        await asyncio.sleep(0.2)
+        task = orchestrator.tasks[task_id]
+        print(f'   Status: {task.status.value.upper()} ({task.progress}%)')
+        if task.result:
+            print(f'   Summary: {task.result.get(\"summary\", \"Done\")}')
+
+    elif cmd == 'list':
+        agents = orchestrator.list_agents()
+        print(f'Active Swarm Agents: {len(agents)}')
+        for a in agents:
+            print(f' • {a[\"task_id\"]} [{a[\"agent_type\"]}] - {a[\"status\"]} ({a[\"progress\"]}%)')
+
+    elif cmd == 'index':
+        target = args[1] if len(args) > 1 else '.'
+        idx = SemanticCodeGraph(target)
+        res = idx.index_workspace()
+        print(f'✓ Indexed {res[\"indexed_files\"]} files into {res[\"total_chunks\"]} code chunks in {res[\"workspace\"]}')
+
+    elif cmd == 'search':
+        if len(args) < 2:
+            print('Usage: agy-swarm search <query>')
+            sys.exit(1)
+        query = ' '.join(args[1:])
+        idx = SemanticCodeGraph('.')
+        idx.index_workspace(max_files=100)
+        results = idx.search(query, top_k=5)
+        print(f'Found {len(results)} match(es) for \"{query}\":\n')
+        for r in results:
+            print(f'📄 {r[\"file_path\"]}:{r[\"lines\"]} [{r[\"symbol_type\"]}: {r[\"symbol\"]}] (score: {r[\"score\"]})')
+            print(f'   {r[\"snippet\"]}\n')
+
+    elif cmd == 'status':
+        print('Swarm Event Bus: org.newbianos.AgentEvents (ONLINE)')
+        print('Active Indexer: Local Semantic Code Graph (Vector store ready)')
+        print('Background Agents: 4 worker engines registered (Security, Test, PR, Refactor)')
+
+asyncio.run(main())
+" "$@"

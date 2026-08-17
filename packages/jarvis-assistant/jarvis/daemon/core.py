@@ -15,6 +15,8 @@ from jarvis.daemon.vision.camera import JarvisCameraTracker
 from jarvis.daemon.vision.screen import JarvisScreenSensor
 from jarvis.daemon.executor.system_authority import SystemAuthorityExecutor
 from jarvis.daemon.ipc.server import JarvisIPCServer
+from jarvis.daemon.voice.spatial_audio import SpatialAudioEngine
+from jarvis.daemon.voice.macros import VoiceMacroEngine
 
 logging.basicConfig(
     level=logging.INFO,
@@ -29,6 +31,8 @@ class JarvisCoreDaemon:
         self.screen = JarvisScreenSensor()
         self.executor = SystemAuthorityExecutor()
         self.ipc = JarvisIPCServer(self)
+        self.spatial_audio = SpatialAudioEngine()
+        self.macros = VoiceMacroEngine()
         self.is_running = False
 
     async def initialize(self):
@@ -72,6 +76,14 @@ class JarvisCoreDaemon:
         prompt_lower = prompt.lower().strip()
         logger.info(f"Processing user intent: '{prompt}'")
 
+        # 0. Voice Macro & Terminal Gesture Matching
+        macro_match = self.macros.match_macro(prompt)
+        if macro_match:
+            macro, cmd = macro_match
+            resp = f"Executing voice macro: '{macro.description}' -> `{cmd}`"
+            asyncio.create_task(self.voice.synthesize_speech(f"Executing {macro.description}"))
+            return resp
+
         # 1. System Status / Telemetry intent
         if any(w in prompt_lower for w in ["status", "system status", "health", "vitals", "diagnostics"]):
             telemetry = await self.executor.get_hardware_telemetry()
@@ -97,7 +109,14 @@ class JarvisCoreDaemon:
             asyncio.create_task(self.voice.synthesize_speech(resp))
             return resp
 
-        # 4. Volume / Hardware control
+        # 4. NPU & Neural Hardware Acceleration intent
+        if any(w in prompt_lower for w in ["npu", "neural", "accelerator", "ai hardware", "quantization", "tops"]):
+            npu = self.executor.npu_manager.get_telemetry()
+            resp = f"Neural Processing Unit active: {npu['device']} ({npu['tops']} TOPS). Running {len(npu['active_models'])} quantized local models at {npu['power_watts']}W ({npu['utilization_percent']}% load, {npu['temperature_c']}°C)."
+            asyncio.create_task(self.voice.synthesize_speech(resp))
+            return resp
+
+        # 5. Volume / Hardware control
         if "volume up" in prompt_lower:
             await self.executor.control_audio_volume(10)
             return "Audio volume increased by 10%."

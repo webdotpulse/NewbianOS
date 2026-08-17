@@ -1,0 +1,28 @@
+#!/bin/sh
+# ==============================================================================
+# Chroot Hook: Configure Neural Processing Unit (NPU) & OpenVINO / Level Zero
+# ==============================================================================
+
+set -e
+
+echo "⚡ [NewbianOS Hook] Configuring NPU acceleration rules and OpenVINO environment..."
+
+# 1. Setup udev rules for Intel NPU (IVPU) and AMD XDNA
+mkdir -p /etc/udev/rules.d/
+cat << 'EOF' > /etc/udev/rules.d/99-npu-acceleration.rules
+# Intel NPU (ivpu / accel)
+SUBSYSTEM=="accel", KERNEL=="accel*", GROUP="render", MODE="0660"
+SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="render", MODE="0660"
+# AMD XDNA NPU
+SUBSYSTEM=="misc", KERNEL=="amdxdna*", GROUP="render", MODE="0660"
+EOF
+
+# 2. Add OpenVINO and oneAPI environment variables
+cat << 'EOF' >> /etc/environment
+OPENVINO_LIB_PATH=/usr/lib/x86_64-linux-gnu
+ZE_AFFINITY_MASK=0
+NPU_PRECISION_HINT=INT4,FP16
+JARVIS_NPU_ACCELERATION=1
+EOF
+
+echo "✓ NPU hardware acceleration rules configured."

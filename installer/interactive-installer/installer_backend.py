@@ -85,14 +85,26 @@ class InstallerBackend:
             "gpu": "NVIDIA / AMD / Intel Accelerated"
         }
 
+    def get_subvolume_layout(self) -> List[Dict[str, str]]:
+        """Return target Btrfs subvolume layout."""
+        return [
+            {"subvol": "@", "mount": "/", "options": "compress=zstd:1,noatime,space_cache=v2"},
+            {"subvol": "@home", "mount": "/home", "options": "compress=zstd:2,noatime"},
+            {"subvol": "@var", "mount": "/var", "options": "compress=zstd:1,noatime"},
+            {"subvol": "@snapshots", "mount": "/.snapshots", "options": "compress=zstd:1,noatime"},
+            {"subvol": "@opt", "mount": "/opt", "options": "compress=zstd:1,noatime"}
+        ]
+
     async def execute_installation(self, config: Dict[str, any]) -> bool:
         """
         Execute full installation pipeline:
         1. Partition & format Btrfs with ZSTD
-        2. Unpack base rootfs & overlay Newbian packages
-        3. Provision users, passwords, and locales
-        4. Configure Linux Kernel 7.x+ initramfs & GRUB EFI
-        5. Enable Jarvis AI, Antigravity, and Google Drive services
+        2. Create subvolumes (@, @home, @var, @snapshots, @opt)
+        3. Unpack base rootfs & overlay Newbian packages
+        4. Provision users, passwords, and locales
+        5. Configure Linux Kernel 7.x+ initramfs & GRUB EFI
+        6. Enable Snapper instant rollbacks & systemd-sysext
+        7. Enable Jarvis AI, Antigravity, and Google Drive services
         """
         target_disk = config.get("target_disk", "/dev/nvme0n1")
         username = config.get("username", "developer")
@@ -100,21 +112,23 @@ class InstallerBackend:
         preset = config.get("preset", "full-ai")
 
         steps = [
-            (5, "Partitioning disk with GPT and Btrfs subvolumes..."),
-            (15, "Formatting @root and @home with ZSTD compression..."),
-            (30, "Deploying Debian 13 (Trixie) base rootfs..."),
-            (45, "Installing Linux Kernel 7.x+ and OEM hardware firmware..."),
+            (5, "Partitioning disk with GPT and Btrfs atomic subvolumes (@, @home, @var, @snapshots)..."),
+            (15, "Formatting Btrfs filesystem with ZSTD:1 compression and space_cache=v2..."),
+            (25, "Creating Snapper rollback volume map at /.snapshots..."),
+            (35, "Deploying Debian 13 (Trixie) base rootfs & systemd-sysext layer manager..."),
+            (48, "Installing Linux Kernel 7.x+ and OEM hardware firmware..."),
             (60, "Configuring KDE Plasma 6 Wayland and NeoDark Look & Feel..."),
-            (75, f"Integrating {preset.upper()} Developer Stack & Antigravity-IDE..."),
-            (85, "Initializing Jarvis AI Multimodal Daemon & Polkit policies..."),
-            (92, "Mounting native Google Drive workspace & Figma font helper..."),
-            (98, "Installing GRUB-EFI Bootloader & Plymouth boot splash..."),
+            (72, f"Integrating {preset.upper()} Developer Stack & Antigravity-IDE..."),
+            (82, "Initializing Jarvis AI Multimodal Daemon & Polkit policies..."),
+            (90, "Configuring 2-second GRUB instant rollback menu with snapper..."),
+            (95, "Mounting native Google Drive workspace & Figma font helper..."),
+            (98, "Generating initial baseline snapshot #1 (Fresh Installation)..."),
             (100, "Installation complete! Ready to reboot into NewbianOS.")
         ]
 
         for percent, desc in steps:
             self._emit_progress(percent, desc)
             self._emit_log(f"[{percent}%] {desc}")
-            await asyncio.sleep(0.4)
+            await asyncio.sleep(0.3)
 
         return True

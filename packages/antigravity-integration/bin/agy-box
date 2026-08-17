@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Antigravity Micro-Container (agy-box) CLI
+# ==============================================================================
+
+set -eo pipefail
+
+python3 -c "
+import asyncio
+import os
+import sys
+
+sys.path.insert(0, '/usr/lib/newbian/packages/antigravity-integration')
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname('__file__'), 'packages/antigravity-integration')))
+
+from containers.agy_box import AgyBoxEngine
+
+engine = AgyBoxEngine()
+args = sys.argv[1:]
+
+def show_help():
+    print('''
+📦 Antigravity Micro-Container Environment (agy-box)
+==================================================================
+Usage: agy-box [COMMAND] [OPTIONS]
+
+Commands:
+  up                Provision and launch ephemeral container for current project
+  list              List active isolated project environments
+  stop <BOX_ID>     Stop running container
+  destroy <BOX_ID>  Destroy container sandbox and reclaim storage
+  ports             Show active *.dev.local domain mappings and port forwardings
+
+Features:
+  • Devcontainer Spec (.devcontainer.json) & Dockerfile support
+  • Native Wayland / GPU acceleration direct pass-through
+  • Automatic ~/GoogleDrive workspace synchronization
+  • Local *.dev.local DNS with SSL termination
+==================================================================
+''')
+
+if not args or args[0] in ['-h', '--help', 'help']:
+    show_help()
+    sys.exit(0)
+
+cmd = args[0]
+
+async def main():
+    if cmd == 'up':
+        res = await engine.up()
+        print(f'🚀 Launched Ephemeral Container Sandbox: {res[\"box_id\"]}')
+        print(f'   Project: {res[\"project\"]}')
+        print(f'   Local Domain: {res[\"domain\"]}')
+        print(f'   Forwarded Ports: {res[\"ports\"]}')
+        print(f'   Wayland GUI: {\"ENABLED\" if res[\"wayland_gui\"] else \"OFF\"}')
+        print(f'   Google Drive Mount: {\"ATTACHED\" if res[\"gdrive_mounted\"] else \"OFF\"}')
+
+    elif cmd == 'list':
+        boxes = engine.list_boxes()
+        print(f'Active Micro-Containers: {len(boxes)}')
+        for b in boxes:
+            print(f' • {b[\"box_id\"]} ({b[\"project\"]}) - {b[\"status\"]} -> https://{b[\"domain\"]}')
+
+    elif cmd == 'stop':
+        if len(args) < 2:
+            print('Error: Specify Box ID to stop.')
+            sys.exit(1)
+        res = await engine.stop(args[1])
+        print(f'✓ Box {args[1]} stopped.')
+
+    elif cmd == 'destroy':
+        if len(args) < 2:
+            print('Error: Specify Box ID to destroy.')
+            sys.exit(1)
+        res = await engine.destroy(args[1])
+        print(f'✓ Box {args[1]} destroyed.')
+
+asyncio.run(main())
+" "$@"

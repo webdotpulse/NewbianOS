@@ -41,7 +41,10 @@ class TestLiveBuildConfig(unittest.TestCase):
             "02-shell-starship.hook.chroot",
             "03-services-enable.hook.chroot",
             "04-calamares-branding.hook.chroot",
-            "05-desktop-defaults.hook.chroot"
+            "05-desktop-defaults.hook.chroot",
+            "06-npu-acceleration.hook.chroot",
+            "07-btrfs-snapper.hook.chroot",
+            "08-pam-biometrics.hook.chroot"
         ]
         for h in hooks:
             hook_path = os.path.join(ROOT_DIR, "iso-builder/config/hooks/normal", h)

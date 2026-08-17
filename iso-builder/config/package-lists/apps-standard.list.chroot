@@ -19,3 +19,19 @@ bluez
 bluez-tools
 brightnessctl
 pavucontrol
+
+# Atomic Core, Btrfs & Instant Snapper Rollbacks
+snapper
+btrfs-progs
+grub-btrfs
+inotify-tools
+systemd-container
+
+# Zero-Trust Hardware Enclave, TPM2 & FIDO2
+tpm2-tools
+libfido2-1
+fido2-tools
+libpam-u2f
+cryptsetup-bin
+
+

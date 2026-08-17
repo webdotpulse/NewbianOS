@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Zero-Trust Hardware Enclave, TPM2 & FIDO2 Manager CLI
+# ==============================================================================
+
+set -eo pipefail
+
+python3 -c "
+import asyncio
+import os
+import sys
+
+sys.path.insert(0, '/usr/lib/newbian/packages/jarvis-assistant')
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname('__file__'), 'packages/jarvis-assistant')))
+
+from jarvis.daemon.security.enclave import HardwareEnclaveManager
+from jarvis.pam.pam_jarvis_face import JarvisBiometricAuthenticator
+
+enclave = HardwareEnclaveManager()
+auth = JarvisBiometricAuthenticator()
+args = sys.argv[1:]
+
+def show_help():
+    print('''
+🛡️ NewbianOS Zero-Trust Hardware Enclave & Biometrics
+==================================================================
+Usage: newbian-tpm-enclave [COMMAND] [OPTIONS]
+
+Commands:
+  status            Show TPM2, Secure Boot, LUKS2, and FIDO2 enclave status
+  enroll-tpm [DISK] Enroll TPM2 chip into LUKS2 keyslot (PCR0+PCR7)
+  fido-sign [EMAIL] Setup FIDO2 hardware key for signed Git commits
+  test-face [USER]  Test Jarvis optical face biometric verification (PAM)
+
+Zero-Trust Features:
+  • Frictionless Jarvis Face Unlock for SDDM and sudo
+  • Hardware TPM2 automated LUKS2 disk key unsealing
+  • Hardware FIDO2/U2F WebAuthn Git commit signing
+==================================================================
+''')
+
+if not args or args[0] in ['-h', '--help', 'help']:
+    show_help()
+    sys.exit(0)
+
+cmd = args[0]
+
+async def main():
+    if cmd == 'status':
+        st = enclave.get_enclave_status()
+        print('🔒 Zero-Trust Hardware Enclave Status:\n')
+        print(f' • TPM2 Device: {st[\"tpm2_device\"]} ({st[\"tpm2_status\"]})')
+        print(f' • PCR Binding Policy: {st[\"pcr_policy\"]}')
+        print(f' • LUKS2 Auto-Unseal: {\"ENABLED\" if st[\"luks2_auto_unseal\"] else \"OFF\"}')
+        print(f' • Secure Boot: {\"ACTIVE\" if st[\"secure_boot\"] else \"OFF\"}')
+        print(f' • FIDO2 Keys: {len(st[\"fido2_keys\"])} connected')
+        for k in st[\"fido2_keys\"]:
+            print(f'   - {k[\"product\"]} (Serial: {k[\"serial\"]})')
+
+    elif cmd == 'enroll-tpm':
+        disk = args[1] if len(args) > 1 else '/dev/nvme0n1p2'
+        res = await enclave.enroll_tpm2_luks(disk)
+        print(f'✓ {res[\"message\"]}')
+
+    elif cmd == 'fido-sign':
+        email = args[1] if len(args) > 1 else 'developer@newbianos.org'
+        res = enclave.configure_fido2_git_signing(email)
+        print(f'✓ Configured FIDO2 Git signing for {email}')
+        print('  Git configs updated (format: ssh-ed25519-sk).')
+
+    elif cmd == 'test-face':
+        user = args[1] if len(args) > 1 else 'developer'
+        match = auth.verify_user(user)
+        print(f'Biometric PAM Face Check for \"{user}\":')
+        print(f' • Authenticated: {\"YES (SUCCESS)\" if match.authenticated else \"NO (FAILED)\"}')
+        print(f' • Confidence Score: {match.confidence_score*100:.1f}%')
+        print(f' • Distance: {match.distance_cm:.1f} cm')
+        print(f' • Gaze Aligned: {match.gaze_aligned}')
+
+asyncio.run(main())
+" "$@"

@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# NewbianOS Cloud Workstation & WebXR Spatial Streaming CLI
+# ==============================================================================
+
+set -eo pipefail
+
+python3 -c "
+import asyncio
+import os
+import sys
+
+sys.path.insert(0, '/usr/lib/newbian/packages/jarvis-assistant')
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname('__file__'), 'packages/jarvis-assistant')))
+
+from jarvis.daemon.streaming.manager import CloudStreamerManager, StreamQuality
+
+streamer = CloudStreamerManager()
+args = sys.argv[1:]
+
+def show_help():
+    print('''
+🌐 NewbianOS Cloud Workstation & WebXR Streaming Manager
+==================================================================
+Usage: newbian-stream [COMMAND] [OPTIONS]
+
+Commands:
+  start [PROFILE]   Start Wayland AV1/HEVC low-latency stream (4k120, 1440p, 1080p)
+  stop              Stop streaming service
+  status            Show active streaming status, encoder, and client devices
+  pin               Generate or view secure pairing PIN for remote clients
+  clients           List connected thin-clients, iPads, and spatial AR/VR headsets
+
+Profiles:
+  4k120             4K 120fps AV1 Spatial (Apple Vision Pro / Meta Quest 3)
+  1440p             1440p 120fps HEVC Ultra
+  1080p             1080p 60fps H.264 High
+==================================================================
+''')
+
+if not args or args[0] in ['-h', '--help', 'help']:
+    show_help()
+    sys.exit(0)
+
+cmd = args[0]
+
+async def main():
+    if cmd == 'start':
+        profile_map = {
+            '4k120': StreamQuality.SPATIAL_4K_120,
+            '1440p': StreamQuality.ULTRA_1440P_120,
+            '1080p': StreamQuality.HIGH_1080P_60
+        }
+        chosen = profile_map.get(args[1] if len(args) > 1 else '4k120', StreamQuality.SPATIAL_4K_120)
+        res = await streamer.start_stream(chosen)
+        print(f'🚀 Cloud Workstation Streamer ACTIVE')
+        print(f'   Encoder: {res[\"encoder\"]}')
+        print(f'   Profile: {res[\"profile\"]}')
+        print(f'   WebRTC Gateway: {res[\"webrtc_url\"]}')
+        print(f'   Pairing PIN: {streamer.pairing_pin}')
+
+    elif cmd == 'stop':
+        res = await streamer.stop_stream()
+        print('✓ Cloud Workstation Streamer stopped.')
+
+    elif cmd == 'status':
+        st = streamer.get_stream_status()
+        print(f'Streaming Active: {\"YES\" if st[\"is_streaming\"] else \"STANDBY\"}')
+        print(f'Encoder Engine: {st[\"encoder\"]}')
+        print(f'Target Profile: {st[\"profile\"]}')
+        print(f'Wayland Direct Scanout: {\"ENABLED\" if st[\"wayland_direct_scanout\"] else \"DISABLED\"}')
+        print(f'Latency Target: {st[\"latency_target_ms\"]} ms')
+        print(f'Connected Clients: {len(st[\"active_clients\"])}')
+
+    elif cmd == 'pin':
+        print(f'Secure Client Pairing PIN: {streamer.pairing_pin}')
+
+    elif cmd == 'clients':
+        st = streamer.get_stream_status()
+        print(f'Connected Devices ({len(st[\"active_clients\"])}):\n')
+        for c in st[\"active_clients\"]:
+            print(f' • [{c[\"device\"]}] IP: {c[\"ip\"]} - {c[\"fps\"]} FPS @ {c[\"resolution\"]} (RTT: {c[\"rtt_ms\"]}ms)')
+
+asyncio.run(main())
+" "$@"

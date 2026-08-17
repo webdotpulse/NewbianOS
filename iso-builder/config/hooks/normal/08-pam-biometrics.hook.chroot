@@ -1,0 +1,26 @@
+#!/bin/sh
+# ==============================================================================
+# Chroot Hook: Setup PAM Biometric Face Authentication & TPM2 Cryptenroll
+# ==============================================================================
+
+set -e
+
+echo "⚡ [NewbianOS Hook] Integrating Jarvis Biometric PAM face module & TPM2 rules..."
+
+# 1. Setup PAM configuration for sudo and sddm
+mkdir -p /etc/security/
+cat << 'EOF' > /etc/security/jarvis_face.conf
+# Jarvis Optical Face Biometrics Policy
+MIN_CONFIDENCE=0.88
+MAX_DISTANCE_CM=120
+REQUIRE_LIVENESS=true
+FAIL_ACTION=ignore
+EOF
+
+# 2. Add TPM2 udev permissions
+cat << 'EOF' > /etc/udev/rules.d/99-tpm2-fido.rules
+SUBSYSTEM=="tpm", KERNEL=="tpmrm*", GROUP="tss", MODE="0660"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", GROUP="plugdev", MODE="0660"
+EOF
+
+echo "✓ PAM Biometrics & TPM2 hardware rules configured."

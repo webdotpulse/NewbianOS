@@ -22,20 +22,41 @@
 
 ### 2. ⚡ Jarvis Multimodal AI Voice & Vision Assistant
 - **On-Device Voice Engine**: PipeWire low-latency audio capture, Voice Activity Detection (VAD), Wake-word listener (*"Hey Jarvis"*), and Neural TTS speech synthesis.
-- **Optical Vision & Face Tracking**: V4L2 camera user perception with real-time face tracking, eye gaze direction, and user proximity detection.
+- **NPU Neural Hardware Acceleration**: Sub-10ms inference supporting Intel OpenVINO, AMD Ryzen AI XDNA, and NVIDIA TensorRT-LLM with GGUF/ONNX quantized models (48+ TOPS at 2.4W).
+- **PipeWire 3D Spatial Audio & Voice Macros**: 3D binaural HRTF sound positioning matching active Wayland window coordinates, plus developer voice shortcuts (*"rebase on main and force push"*, *"split terminal and tail logs"*).
+- **Optical Vision & Face Biometrics**: V4L2 camera user perception with real-time face tracking, eye gaze direction, and zero-trust PAM face unlock (`pam_jarvis_face`).
 - **Screen Perception**: Wayland PipeWire screencast OCR and window context sensor for real-time IDE and terminal awareness.
-- **Deep OS Execution Authority**: Polkit-authorized system execution across hardware telemetry (CPU, GPU, RAM, temps), container management (`docker compose`), package installations (`apt`, `flatpak`), systemd services, and audio/display controls.
-- **Holographic Sci-Fi HUD (`jarvis-hud`)**: Glassmorphic overlay with animated Arc-Reactor core, audio-reactive waveform visualizer, face-tracking reticle, and system diagnostic monitors.
+- **Deep OS Execution Authority**: Polkit-authorized system execution across hardware telemetry (CPU, GPU, NPU, RAM, thermals), container management, package installations, systemd services, and instant Btrfs snapshots.
+- **Spatial Holographic HUD (`jarvis-hud`)**: Cyberpunk glassmorphic overlay with WebXR 3D spatial mode, animated Arc-Reactor core, audio-reactive waveform visualizer, and live swarm monitors.
 
-### 3. 🌐 Official Google Chrome Integration
+### 3. 🔄 Immutable Atomic Core & Instant Btrfs Rollbacks (`newbian-rollback`)
+- **Transactional Base System**: Atomic Btrfs subvolumes (`@`, `@home`, `@var`, `@snapshots`, `@opt`) and `systemd-sysext` mutable extension layers.
+- **2-Second Rollback**: Instant boot recovery via Snapper and GRUB snapshot menus.
+
+### 4. 🐝 Antigravity Multi-Agent Swarm (`agy swarm` / `agy-swarm`)
+- **Local Semantic Code Graph**: Vector AST indexing across local repositories for instant semantic code search and context retrieval.
+- **Autonomous Worker Swarms**: Background AI agents for security audits, test runner diagnosis, refactoring, and automated PR preparation over D-Bus (`org.newbianos.AgentEvents`).
+
+### 5. 📦 Ephemeral Micro-Containers (`agy-box` / `agy up`)
+- **Disposable Dev Environments**: Instant container provisioning from `.devcontainer.json` or Dockerfiles with GPU pass-through, Wayland GUI forwarding, and `~/GoogleDrive` mounting.
+- **Zero-Config Networking**: Automatic `*.dev.local` local DNS routing with SSL termination.
+
+### 6. 🌐 Cloud Workstation Streaming & WebXR Spatial HUD (`newbian-stream`)
+- **Direct Wayland Scanout**: Hardware-accelerated 4K 120fps AV1/HEVC WebRTC streaming to iPads, MacBooks, and VR/AR spatial headsets (Apple Vision Pro, Meta Quest).
+
+### 7. 🛡️ Zero-Trust Hardware Enclave (`newbian-tpm-enclave`)
+- **TPM2 & Secure Boot**: Automatic LUKS2 key unsealing bound to PCR0+PCR7 states via `systemd-cryptenroll`.
+- **FIDO2 / WebAuthn Hardware Keys**: Frictionless developer Git commit signing and SSH key auth.
+
+### 8. 🌐 Official Google Chrome Integration
 - **Widevine DRM & Chrome Sync**: Pre-configured with official Google Linux repository.
 - **Hardware Video Acceleration**: Full VA-API and Vulkan hardware acceleration on Intel, AMD, and NVIDIA graphics.
 
-### 4. ☁️ Native Google Drive Workspace (`~/GoogleDrive`)
+### 9. ☁️ Native Google Drive Workspace (`~/GoogleDrive`)
 - **Direct Filesystem Mount**: Bidirectional FUSE & Inotify sync engine seamlessly mounted at `~/GoogleDrive`.
 - **KDE Dolphin Integration**: Pinned Google Drive bookmark in Dolphin Places sidebar with context actions (*"Sync Now"*, *"Share Link"*).
 
-### 5. 🎨 Figma Desktop & Local Font Helper
+### 10. 🎨 Figma Desktop & Local Font Helper
 - **GPU-Accelerated Design**: Figma desktop workspace with Ozone Wayland flags.
 - **Local Font Daemon (`figma-font-helper`)**: Runs on `127.0.0.1:18412` exposing all installed local developer fonts (JetBrains Mono, Inter, Fira Code, Geist Mono) directly inside Figma.
 
@@ -55,15 +76,30 @@
 
 ### CLI Commands
 ```bash
-# Antigravity CLI
+# Antigravity CLI & Swarm
 agy chat
-agy "Fix failing unit tests in ./src"
+agy swarm spawn security "Audit all privileged calls"
+agy up                  # Launch ephemeral project container (.devcontainer.json)
+agy index .             # Build local semantic code graph
 
-# Jarvis Multimodal AI
+# Jarvis Multimodal AI & Voice Macros
+jarvis "rebase on main and force push"
 jarvis "Deploy docker containers and report status"
 jarvis --look           # Inspect active screen and error context
-jarvis --status         # Display hardware vitals and face perception
+jarvis --status         # Display hardware, NPU and face perception vitals
 jarvis --hud            # Open the Holographic HUD overlay
+
+# Instant Btrfs Rollback & Snapshots
+newbian-rollback list
+newbian-rollback rollback 1
+
+# Cloud Workstation Streaming
+newbian-stream start 4k120
+newbian-stream status
+
+# Zero-Trust TPM2 & FIDO2 Enclave
+newbian-tpm-enclave status
+newbian-tpm-enclave fido-sign
 
 # Google Drive Cloud Sync
 gdrive status           # Check sync status and storage quota

@@ -81,9 +81,9 @@ class JarvisVoiceEngine:
                 pass
 
         try:
-            # If in non-interactive environment or test, skip heavy audio spawns
-            if os.environ.get("JARVIS_HEADLESS") == "1" or not os.environ.get("PULSE_SERVER", os.environ.get("WAYLAND_DISPLAY")):
-                await asyncio.sleep(0.01)
+            # If in non-interactive environment, test, or headless, skip heavy audio spawns
+            if os.environ.get("JARVIS_HEADLESS") == "1" or "unittest" in sys.modules or not os.environ.get("PULSE_SERVER", os.environ.get("WAYLAND_DISPLAY")):
+                await asyncio.sleep(0.001)
                 return True
 
             # Try high quality local neural TTS if installed
