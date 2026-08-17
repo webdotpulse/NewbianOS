@@ -83,5 +83,15 @@ class TestLiveBuildConfig(unittest.TestCase):
             self.assertIn("linux-image-amd64", pkg_content)
             self.assertIn("linux-headers-amd64", pkg_content)
 
+    def test_build_iso_script_isohybrid_support(self):
+        """Verify scripts/build-iso.sh configures isohybrid partition tables for USB/Etcher compatibility."""
+        script_path = os.path.join(ROOT_DIR, "scripts/build-iso.sh")
+        self.assertTrue(os.path.exists(script_path))
+        with open(script_path, "r") as f:
+            content = f.read()
+            self.assertIn("isohybrid", content)
+            self.assertIn("syslinux-utils", content)
+            self.assertIn("isohybrid --uefi", content)
+
 if __name__ == "__main__":
     unittest.main()

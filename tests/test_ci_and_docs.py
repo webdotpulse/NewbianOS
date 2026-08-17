@@ -53,6 +53,8 @@ class TestCIAndDocumentation(unittest.TestCase):
         # Check essential methods and tools
         self.assertIn("Ventoy", content)
         self.assertIn("BalenaEtcher", content)
+        self.assertIn("isohybrid", content)
+        self.assertIn("Missing partition table", content)
         self.assertIn("dd", content)
         self.assertIn("Rufus", content)
         self.assertIn("diskutil", content)
@@ -71,6 +73,7 @@ class TestCIAndDocumentation(unittest.TestCase):
 
         self.assertIn("live-build", content)
         self.assertIn("xorriso", content)
+        self.assertIn("syslinux-utils", content)
         self.assertIn("squashfs-tools", content)
         self.assertIn("gettext", content)
         self.assertIn("po4a", content)

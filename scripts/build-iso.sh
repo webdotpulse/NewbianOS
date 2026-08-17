@@ -21,7 +21,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Check required host utilities
-REQUIRED_TOOLS=("debootstrap" "xorriso" "grub-mkrescue" "mknod")
+REQUIRED_TOOLS=("debootstrap" "xorriso" "grub-mkrescue" "isohybrid")
 MISSING_TOOLS=()
 
 for tool in "${REQUIRED_TOOLS[@]}"; do
@@ -33,7 +33,7 @@ done
 if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
     echo "⚠️  Missing build tools: ${MISSING_TOOLS[*]}"
     echo "   Installing build dependencies via apt..."
-    apt-get update && apt-get install -y debootstrap debian-archive-keyring xorriso isolinux syslinux-efi grub-efi-amd64-bin grub-pc-bin grub-common dosfstools mtools squashfs-tools git make ca-certificates gettext po4a
+    apt-get update && apt-get install -y debootstrap debian-archive-keyring xorriso isolinux syslinux-efi syslinux-utils grub-efi-amd64-bin grub-pc-bin grub-common dosfstools mtools squashfs-tools git make ca-certificates gettext po4a
 fi
 
 # Ensure modern Debian live-build is installed
@@ -124,6 +124,14 @@ lb build
 
 ISO_OUTPUT=$(ls -1 "$BUILD_DIR"/*.iso 2>/dev/null | head -n 1 || true)
 if [[ -n "$ISO_OUTPUT" ]]; then
+    echo "🔧 Applying isohybrid MBR/GPT partition table for BalenaEtcher and USB boot compatibility..."
+    if command -v isohybrid &>/dev/null; then
+        isohybrid --uefi "$ISO_OUTPUT" 2>/dev/null || isohybrid "$ISO_OUTPUT" 2>/dev/null || true
+        echo "✓ Isohybrid partition table applied successfully."
+    else
+        echo "⚠️  Warning: isohybrid tool not found in PATH. Skipping post-build partitioning."
+    fi
+
     if [[ -n "${SUDO_USER:-}" && "$SUDO_USER" != "root" ]]; then
         echo "🔒 Restoring build directory permissions to user $SUDO_USER..."
         chown -R "$SUDO_USER:$(id -gn "$SUDO_USER" 2>/dev/null || echo "$SUDO_USER")" "$ROOT_DIR/build" 2>/dev/null || true

@@ -19,6 +19,7 @@ apt-get install -y \
     xorriso \
     isolinux \
     syslinux-efi \
+    syslinux-utils \
     grub-efi-amd64-bin \
     grub-pc-bin \
     grub-common \

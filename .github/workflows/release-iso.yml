@@ -59,6 +59,7 @@ jobs:
             xorriso \
             isolinux \
             syslinux-efi \
+            syslinux-utils \
             grub-efi-amd64-bin \
             grub-pc-bin \
             grub-common \
@@ -105,6 +106,11 @@ jobs:
 
           if [[ "$BUILT_ISO" != "$DEST_PATH" ]]; then
             mv "$BUILT_ISO" "$DEST_PATH"
+          fi
+
+          # Ensure isohybrid MBR/GPT partition tables are applied before hashing
+          if command -v isohybrid &>/dev/null; then
+            isohybrid --uefi "$DEST_PATH" 2>/dev/null || isohybrid "$DEST_PATH" 2>/dev/null || true
           fi
 
           # Generate cryptographic checksums

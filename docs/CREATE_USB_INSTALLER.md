@@ -107,6 +107,10 @@ sync
 4. Wait for the flashing and verification pass to complete (typically 1–3 minutes on USB 3.0).
 5. When finished, safely remove the USB drive.
 
+> [!NOTE]
+> **"Missing partition table" Warning in BalenaEtcher**:
+> If BalenaEtcher presents a warning dialog stating *"Missing partition table: It looks like this is not a bootable image"*, NewbianOS ISOs include EFI/El-Torito boot records. You can safely click **"Continue"** to proceed with flashing, or apply `isohybrid --uefi /path/to/image.iso` on Linux prior to selecting the file in Etcher. Alternatively, use **Ventoy (Method 1)** for direct ISO drag-and-drop.
+
 ---
 
 ## 🐧 Method 3: Linux Terminal (`dd` / CLI)
@@ -256,7 +260,18 @@ Once the KDE Plasma 6 desktop loads:
 ### Q3: Rufus gave an error about missing files.
 - **Solution**: Make sure you selected **"Write in DD Image mode"** when prompted by Rufus. If ISO mode was selected, re-flash using DD mode or use **Ventoy**.
 
-### Q4: How do I restore my USB drive back to normal storage afterwards?
+### Q4: BalenaEtcher warns "Missing partition table - It looks like this is not a bootable image".
+- **Why it happens**: BalenaEtcher scans sector 0 for a raw partition table (MBR/GPT). Standard optical disc ISOs rely on El Torito catalog records rather than standard hard disk partition tables.
+- **Solution A (Click Continue)**: Click **"Continue"** in BalenaEtcher. The image will flash and modern UEFI computers will recognize the EFI bootloader.
+- **Solution B (Convert ISO with `isohybrid`)**: Convert the ISO into a hybrid disk image with an embedded MBR/GPT partition table before opening in Etcher:
+  ```bash
+  sudo apt-get install syslinux-utils
+  isohybrid --uefi /path/to/NewbianOS-*.iso
+  ```
+  Once converted, BalenaEtcher will accept the ISO immediately without warnings.
+- **Solution C (Use Ventoy or Rufus)**: Use **Ventoy** (Method 1) or **Rufus** (Method 4) which automatically support booting ISO files directly.
+
+### Q5: How do I restore my USB drive back to normal storage afterwards?
 - **Windows**: Open `diskpart` → `list disk` → `select disk X` → `clean` → `create partition primary` → `format fs=ntfs quick`.
 - **Linux**: Use GNOME Disks or `sudo wipefs -a /dev/sdX && sudo parted -s /dev/sdX mklabel gpt mkpart primary fat32 1MiB 100% && sudo mkfs.vfat -F32 /dev/sdX1`.
 - **macOS**: Open **Disk Utility** → Select USB Drive → Click **Erase** → Format as `ExFAT` or `MS-DOS (FAT)`.
