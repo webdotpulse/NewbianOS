@@ -10,7 +10,7 @@ qml-module-qtquick-controls2
 qml-module-qtquick-layouts
 
 # System Services & Polkit
-policykit-1
+polkitd
 pkexec
 systemd-timesyncd
 network-manager
@@ -23,7 +23,6 @@ pavucontrol
 # Atomic Core, Btrfs & Instant Snapper Rollbacks
 snapper
 btrfs-progs
-grub-btrfs
 inotify-tools
 systemd-container
 

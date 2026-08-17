@@ -6,7 +6,6 @@
 linux-image-amd64
 linux-headers-amd64
 linux-cpupower
-bcachefs-tools
 firmware-linux-free
 firmware-linux-nonfree
 firmware-misc-nonfree
@@ -39,9 +38,8 @@ v4l-utils
 opencv-data
 
 # Neural Processing Unit (NPU) & OpenVINO / Level Zero Runtimes
-intel-opencl-icd
 mesa-opencl-icd
-libze-loader1
+libze1
 clinfo
 libgomp1
 

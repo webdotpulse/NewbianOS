@@ -6,7 +6,6 @@
 # Core Desktop & Wayland Session
 plasma-desktop
 plasma-workspace
-plasma-workspace-wayland
 kwin-wayland
 sddm
 sddm-theme-breeze
@@ -24,7 +23,7 @@ dolphin
 kio-extras
 konsole
 ark
-spectacle
+kde-spectacle
 plasma-systemmonitor
 
 # Fonts & Typography

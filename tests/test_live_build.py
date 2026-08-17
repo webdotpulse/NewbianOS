@@ -31,7 +31,7 @@ class TestLiveBuildConfig(unittest.TestCase):
         with open(kde_list_path, "r") as f:
             content = f.read()
             # Essential components must exist
-            self.assertIn("plasma-workspace-wayland", content)
+            self.assertIn("plasma-workspace", content)
             self.assertIn("dolphin", content)
             self.assertIn("konsole", content)
             # Bloatware must NOT be included
