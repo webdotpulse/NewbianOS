@@ -1,0 +1,31 @@
+[Default Applications]
+text/plain=antigravity-ide.desktop
+text/markdown=antigravity-ide.desktop
+text/x-python=antigravity-ide.desktop
+text/x-shellscript=antigravity-ide.desktop
+text/x-c=antigravity-ide.desktop
+text/x-c++=antigravity-ide.desktop
+text/javascript=antigravity-ide.desktop
+text/html=google-chrome.desktop
+application/xhtml+xml=google-chrome.desktop
+application/xml=antigravity-ide.desktop
+application/json=antigravity-ide.desktop
+application/pdf=google-chrome.desktop
+application/x-code-workspace=antigravity-ide.desktop
+x-scheme-handler/http=google-chrome.desktop
+x-scheme-handler/https=google-chrome.desktop
+x-scheme-handler/chrome=google-chrome.desktop
+inode/directory=org.kde.dolphin.desktop
+
+[Added Associations]
+text/plain=antigravity-ide.desktop;
+text/markdown=antigravity-ide.desktop;
+text/x-python=antigravity-ide.desktop;
+text/x-shellscript=antigravity-ide.desktop;
+text/javascript=antigravity-ide.desktop;
+text/html=google-chrome.desktop;antigravity-ide.desktop;
+application/json=antigravity-ide.desktop;
+application/pdf=google-chrome.desktop;
+x-scheme-handler/http=google-chrome.desktop;
+x-scheme-handler/https=google-chrome.desktop;
+inode/directory=org.kde.dolphin.desktop;

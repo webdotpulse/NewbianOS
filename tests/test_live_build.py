@@ -25,6 +25,22 @@ class TestLiveBuildConfig(unittest.TestCase):
                 lines = [l.strip() for l in f if l.strip() and not l.startswith("#")]
                 self.assertTrue(len(lines) > 5, f"Package list {p} should have multiple packages")
 
+    def test_minimal_kde_packages(self):
+        """Verify that KDE desktop packages are minimal and exclude bloatware."""
+        kde_list_path = os.path.join(ROOT_DIR, "iso-builder/config/package-lists/desktop-kde.list.chroot")
+        with open(kde_list_path, "r") as f:
+            content = f.read()
+            # Essential components must exist
+            self.assertIn("plasma-workspace-wayland", content)
+            self.assertIn("dolphin", content)
+            self.assertIn("konsole", content)
+            # Bloatware must NOT be included
+            self.assertNotIn("kate\n", content)
+            self.assertNotIn("kwrite\n", content)
+            self.assertNotIn("gwenview\n", content)
+            self.assertNotIn("okular\n", content)
+            self.assertNotIn("kcalc\n", content)
+
     def test_auto_config(self):
         """Verify auto/config file targets trixie and amd64."""
         auto_config_path = os.path.join(ROOT_DIR, "iso-builder/auto/config")

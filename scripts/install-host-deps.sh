@@ -14,8 +14,8 @@ echo "📦 Installing required dependencies for NewbianOS development and ISO cr
 
 apt-get update
 apt-get install -y \
-    live-build \
     debootstrap \
+    debian-archive-keyring \
     xorriso \
     isolinux \
     syslinux-efi \
@@ -30,6 +30,17 @@ apt-get install -y \
     python3 \
     python3-pip \
     desktop-file-utils \
+    git \
+    make \
     ca-certificates
+
+# Ensure modern Debian live-build is installed
+if ! command -v lb &>/dev/null || ! lb config --help 2>&1 | grep -q "iso-hybrid"; then
+    echo "📦 Installing official modern live-build from salsa.debian.org..."
+    TEMP_LB_DIR=$(mktemp -d)
+    git clone --depth=1 https://salsa.debian.org/live-team/live-build.git "$TEMP_LB_DIR"
+    (cd "$TEMP_LB_DIR" && make install)
+    rm -rf "$TEMP_LB_DIR"
+fi
 
 echo "✓ All host dependencies installed successfully."

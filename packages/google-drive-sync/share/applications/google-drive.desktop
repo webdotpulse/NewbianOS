@@ -1,0 +1,26 @@
+[Desktop Entry]
+Name=Google Drive
+GenericName=Cloud Storage & Sync
+Comment=Synchronize and access your files on Google Drive
+Exec=dolphin ~/GoogleDrive
+Icon=folder-cloud
+Type=Application
+StartupNotify=true
+Categories=Utility;Network;FileManager;
+Keywords=google;drive;cloud;sync;storage;
+Actions=SyncNow;OpenWeb;Status;
+
+[Desktop Action SyncNow]
+Name=Sync Now
+Exec=gdrive sync
+Icon=view-refresh
+
+[Desktop Action OpenWeb]
+Name=Open Google Drive Web
+Exec=google-chrome-newbian https://drive.google.com
+Icon=internet-web-browser
+
+[Desktop Action Status]
+Name=Check Sync Status
+Exec=konsole -e gdrive status
+Icon=dialog-information

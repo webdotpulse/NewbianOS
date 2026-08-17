@@ -1,9 +1,10 @@
 # ==============================================================================
-# NewbianOS KDE Plasma 6 Desktop Package List
+# NewbianOS Minimal KDE Plasma 6 Desktop Package List
+# Bare Necessities: Plasma Wayland Core + Antigravity, Jarvis, Chrome & Drive focus
 # ==============================================================================
 
-# Core Desktop & Display Server
-kde-plasma-desktop
+# Core Desktop & Wayland Session
+plasma-desktop
 plasma-workspace
 plasma-workspace-wayland
 kwin-wayland
@@ -17,25 +18,16 @@ powerdevil
 polkit-kde-agent-1
 systemsettings
 breeze-icon-theme
-plasma-widgets-addons
 
-# KDE Core Utilities
+# Essential Core Utilities (Minimal Bare Necessities)
 dolphin
-dolphin-plugins
 kio-extras
 konsole
-kate
-kwrite
 ark
 spectacle
-gwenview
-okular
-kcalc
 plasma-systemmonitor
 
-# Look & Feel / Theming
-qt6-style-kvantum
-qt6-style-kvantum-themes
+# Fonts & Typography
 fonts-inter
 fonts-jetbrains-mono
 fonts-firacode

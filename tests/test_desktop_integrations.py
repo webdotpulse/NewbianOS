@@ -14,10 +14,14 @@ class TestDesktopIntegrations(unittest.TestCase):
         antigravity_desktop = os.path.join(ROOT_DIR, "packages/antigravity-integration/share/applications/antigravity-ide.desktop")
         chrome_desktop = os.path.join(ROOT_DIR, "packages/google-chrome-integration/share/applications/google-chrome.desktop")
         figma_desktop = os.path.join(ROOT_DIR, "packages/figma-integration/share/applications/figma.desktop")
+        jarvis_desktop = os.path.join(ROOT_DIR, "packages/jarvis-assistant/share/applications/jarvis-hud.desktop")
+        gdrive_desktop = os.path.join(ROOT_DIR, "packages/google-drive-sync/share/applications/google-drive.desktop")
 
         self.assertTrue(os.path.exists(antigravity_desktop))
         self.assertTrue(os.path.exists(chrome_desktop))
         self.assertTrue(os.path.exists(figma_desktop))
+        self.assertTrue(os.path.exists(jarvis_desktop))
+        self.assertTrue(os.path.exists(gdrive_desktop))
 
     def test_ozone_flags_in_launchers(self):
         """Verify that launchers include Ozone Wayland flags."""

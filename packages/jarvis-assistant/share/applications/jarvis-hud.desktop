@@ -1,0 +1,27 @@
+[Desktop Entry]
+Name=Jarvis AI Assistant
+GenericName=Multimodal AI Voice & Vision Assistant
+Comment=Jarvis AI Assistant with Holographic HUD, Voice Commands & Screen Perception
+Exec=jarvis-hud
+Icon=system-help
+Type=Application
+StartupNotify=true
+StartupWMClass=jarvis-hud
+Categories=Utility;Development;AudioVideo;
+Keywords=ai;jarvis;voice;agent;hud;
+Actions=ToggleHUD;VoiceMode;SystemStatus;
+
+[Desktop Action ToggleHUD]
+Name=Toggle Jarvis HUD
+Exec=jarvis-hud --toggle
+Icon=view-fullscreen
+
+[Desktop Action VoiceMode]
+Name=Start Voice Listening
+Exec=jarvis listen
+Icon=audio-input-microphone
+
+[Desktop Action SystemStatus]
+Name=Jarvis System Diagnostics
+Exec=jarvis status
+Icon=system-run

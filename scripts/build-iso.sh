@@ -21,7 +21,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Check required host utilities
-REQUIRED_TOOLS=("lb" "debootstrap" "xorriso" "grub-mkrescue" "mknod")
+REQUIRED_TOOLS=("debootstrap" "xorriso" "grub-mkrescue" "mknod")
 MISSING_TOOLS=()
 
 for tool in "${REQUIRED_TOOLS[@]}"; do
@@ -33,7 +33,16 @@ done
 if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
     echo "⚠️  Missing build tools: ${MISSING_TOOLS[*]}"
     echo "   Installing build dependencies via apt..."
-    apt-get update && apt-get install -y live-build debootstrap xorriso isolinux syslinux-efi grub-efi-amd64-bin grub-pc-bin grub-common dosfstools mtools squashfs-tools ca-certificates
+    apt-get update && apt-get install -y debootstrap debian-archive-keyring xorriso isolinux syslinux-efi grub-efi-amd64-bin grub-pc-bin grub-common dosfstools mtools squashfs-tools git make ca-certificates
+fi
+
+# Ensure modern Debian live-build is installed
+if ! command -v lb &>/dev/null || ! lb config --help 2>&1 | grep -q "iso-hybrid"; then
+    echo "📦 Installing official modern live-build from salsa.debian.org..."
+    TEMP_LB_DIR=$(mktemp -d)
+    git clone --depth=1 https://salsa.debian.org/live-team/live-build.git "$TEMP_LB_DIR"
+    (cd "$TEMP_LB_DIR" && make install)
+    rm -rf "$TEMP_LB_DIR"
 fi
 
 # Clean and prepare workspace
@@ -66,6 +75,7 @@ cp -r "$ROOT_DIR/packages/antigravity-integration/skel/." "$INCLUDES_ROOT/etc/sk
 mkdir -p "$INCLUDES_ROOT/usr/lib/newbian/jarvis"
 cp -r "$ROOT_DIR/packages/jarvis-assistant/jarvis/"* "$INCLUDES_ROOT/usr/lib/newbian/jarvis/" 2>/dev/null || true
 cp "$ROOT_DIR/packages/jarvis-assistant/bin/"* "$INCLUDES_ROOT/usr/bin/" 2>/dev/null || true
+cp "$ROOT_DIR/packages/jarvis-assistant/share/applications/"* "$INCLUDES_ROOT/usr/share/applications/" 2>/dev/null || true
 cp "$ROOT_DIR/packages/jarvis-assistant/systemd/"* "$INCLUDES_ROOT/usr/lib/systemd/user/" 2>/dev/null || true
 cp "$ROOT_DIR/packages/jarvis-assistant/polkit/"* "$INCLUDES_ROOT/usr/share/polkit-1/actions/" 2>/dev/null || true
 
@@ -77,6 +87,7 @@ cp "$ROOT_DIR/packages/google-chrome-integration/share/applications/"* "$INCLUDE
 mkdir -p "$INCLUDES_ROOT/usr/lib/newbian/gdrive"
 cp -r "$ROOT_DIR/packages/google-drive-sync/gdrive/"* "$INCLUDES_ROOT/usr/lib/newbian/gdrive/" 2>/dev/null || true
 cp "$ROOT_DIR/packages/google-drive-sync/bin/"* "$INCLUDES_ROOT/usr/bin/" 2>/dev/null || true
+cp -r "$ROOT_DIR/packages/google-drive-sync/share/." "$INCLUDES_ROOT/usr/share/" 2>/dev/null || true
 cp "$ROOT_DIR/packages/google-drive-sync/systemd/"* "$INCLUDES_ROOT/usr/lib/systemd/user/" 2>/dev/null || true
 
 # Copy Figma integration

@@ -21,10 +21,10 @@ lb config noauto \
     --iso-volume "NEWBIAN_13_DEV" \
     --memtest none \
     --win32-loader false \
-    --apt-recommends true \
+    --apt-recommends false \
     --apt-secure true \
     --system systemd \
     --security true \
-    --updates true \
-    --backports true \
+    --mirror-bootstrap "http://deb.debian.org/debian/" \
+    --mirror-binary "http://deb.debian.org/debian/" \
     "${@}"

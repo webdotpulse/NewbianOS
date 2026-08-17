@@ -1,0 +1,12 @@
+[General]
+ColorScheme=BreezeDark
+Name=Breeze Dark
+TerminalApplication=konsole
+BrowserApplication=google-chrome.desktop
+
+[KDE]
+ShowDeleteCommand=true
+SingleClick=false
+
+[Icons]
+Theme=breeze-dark
