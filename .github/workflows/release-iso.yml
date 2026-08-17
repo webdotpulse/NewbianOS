@@ -77,7 +77,7 @@ jobs:
           cd /tmp/live-build
           sudo make install
           cd -
-          rm -rf /tmp/live-build
+          sudo rm -rf /tmp/live-build
 
       - name: 🚀 Build NewbianOS Live ISO
         run: |
