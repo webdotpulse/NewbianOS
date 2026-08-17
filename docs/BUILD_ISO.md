@@ -28,8 +28,18 @@ make test-vm
 ```
 This launches QEMU with KVM acceleration, 4GB RAM, UEFI (OVMF) firmware, and PipeWire audio.
 
-## Step 5: Flash to USB Drive
+## Step 5: Flash to USB Drive & Install
+For detailed cross-platform flashing instructions (using **Ventoy**, **BalenaEtcher**, **Rufus**, or **dd** on Linux, Windows, and macOS), refer to:
+👉 **[Creating an Installable USB Drive Manual](file:///home/koen/git/NewbianOS/docs/CREATE_USB_INSTALLER.md)**
+
+Quick Linux CLI flash command:
 ```bash
-sudo dd if=build/iso/newbianos-13-dev.iso of=/dev/sdX bs=4M status=progress oflag=sync
+sudo dd if=build/iso/NewbianOS-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
 ```
 *(Replace `/dev/sdX` with your target USB drive)*
+
+---
+
+## 🤖 Automated GitHub Release Builds
+NewbianOS ISOs are automatically built and published as release assets on every tagged GitHub release via the GitHub Actions workflow in [`.github/workflows/release-iso.yml`](file:///home/koen/git/NewbianOS/.github/workflows/release-iso.yml). Pre-built ISOs and SHA-256 checksums can be downloaded directly from the GitHub Releases tab.
+

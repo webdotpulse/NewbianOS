@@ -1,0 +1,128 @@
+name: Build & Publish Release ISO
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release Tag Name (e.g. v1.0.0)'
+        required: false
+        default: 'latest'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release-iso:
+    name: ⚡ Build NewbianOS Live ISO & Attach to Release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+
+    steps:
+      - name: 📥 Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🧹 Maximize runner disk space
+        run: |
+          echo "Current disk usage before cleanup:"
+          df -h /
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker system prune -af || true
+          echo "Disk usage after cleanup:"
+          df -h /
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 🔍 Lint shell scripts & desktop configs
+        run: |
+          make lint
+
+      - name: 🧪 Run test suites
+        run: |
+          make test
+
+      - name: 📦 Install live-build and host dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            live-build \
+            debootstrap \
+            xorriso \
+            isolinux \
+            syslinux-efi \
+            grub-efi-amd64-bin \
+            grub-pc-bin \
+            grub-common \
+            dosfstools \
+            mtools \
+            squashfs-tools \
+            desktop-file-utils \
+            ca-certificates
+
+      - name: 🚀 Build NewbianOS Live ISO
+        run: |
+          sudo ./scripts/build-iso.sh
+
+      - name: 🔐 Prepare ISO Artifacts & Checksums
+        id: prepare_artifacts
+        run: |
+          # Determine release tag name
+          TAG="${{ github.event.release.tag_name || github.event.inputs.release_tag || github.ref_name }}"
+          if [[ -z "$TAG" || "$TAG" == "main" || "$TAG" == "master" ]]; then
+            TAG="v13-$(date +'%Y%m%d')"
+          fi
+          
+          # Find generated ISO
+          BUILT_ISO=$(ls -1 build/iso/*.iso | head -n 1)
+          if [[ ! -f "$BUILT_ISO" ]]; then
+            echo "❌ Error: ISO build output not found in build/iso/"
+            exit 1
+          fi
+
+          FINAL_ISO_NAME="NewbianOS-13-Nexus-${TAG}-amd64.iso"
+          DEST_PATH="build/iso/${FINAL_ISO_NAME}"
+
+          if [[ "$BUILT_ISO" != "$DEST_PATH" ]]; then
+            mv "$BUILT_ISO" "$DEST_PATH"
+          fi
+
+          # Generate cryptographic checksums
+          cd build/iso
+          sha256sum "${FINAL_ISO_NAME}" > "${FINAL_ISO_NAME}.sha256"
+          sha512sum "${FINAL_ISO_NAME}" > "${FINAL_ISO_NAME}.sha512"
+          
+          echo "Generated ISO: ${FINAL_ISO_NAME}"
+          cat "${FINAL_ISO_NAME}.sha256"
+          cd ../..
+
+          echo "iso_path=${DEST_PATH}" >> $GITHUB_OUTPUT
+          echo "tag_name=${TAG}" >> $GITHUB_OUTPUT
+
+      - name: 📤 Upload ISO and Checksums to GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag != '')
+        with:
+          tag_name: ${{ steps.prepare_artifacts.outputs.tag_name }}
+          files: |
+            build/iso/NewbianOS-13-Nexus-*.iso
+            build/iso/NewbianOS-13-Nexus-*.iso.sha256
+            build/iso/NewbianOS-13-Nexus-*.iso.sha512
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 💾 Upload Checksums as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: newbianos-checksums
+          path: |
+            build/iso/*.sha256
+            build/iso/*.sha512

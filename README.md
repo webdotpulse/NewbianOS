@@ -109,7 +109,15 @@ gdrive auth             # Connect Google Cloud account
 
 ---
 
-## 🛠️ Building the Bootable Live ISO
+## 💾 Download & USB Installation
+
+1. **Download Pre-Built ISO**: Grab the latest release ISO (`NewbianOS-13-Nexus-*.iso`) and cryptographic SHA-256 checksums from [GitHub Releases](https://github.com/webdotpulse/NewbianOS/releases). Every tagged release automatically triggers a fresh ISO build via GitHub Actions.
+2. **Create Bootable USB**: Follow our step-by-step flashing guide for Windows, Linux, and macOS:
+   👉 **[Full Guide: Creating an Installable USB Drive](file:///home/koen/git/NewbianOS/docs/CREATE_USB_INSTALLER.md)**
+
+---
+
+## 🛠️ Building the Bootable Live ISO Locally
 
 ```bash
 # 1. Install build dependencies on Debian/Ubuntu

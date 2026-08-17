@@ -21,13 +21,15 @@ apt-get install -y \
     syslinux-efi \
     grub-efi-amd64-bin \
     grub-pc-bin \
-    mknod \
+    grub-common \
     dosfstools \
     mtools \
+    squashfs-tools \
     qemu-system-x86 \
     ovmf \
     python3 \
     python3-pip \
-    desktop-file-utils
+    desktop-file-utils \
+    ca-certificates
 
 echo "✓ All host dependencies installed successfully."

@@ -28,6 +28,7 @@ test:
 lint:
 	@echo "🔍 Linting shell scripts and chroot hooks..."
 	@bash -n scripts/build-iso.sh
+	@bash -n scripts/install-host-deps.sh
 	@bash -n scripts/test-vm.sh
 	@bash -n packages/antigravity-integration/bin/antigravity-ide
 	@bash -n packages/antigravity-integration/bin/agy

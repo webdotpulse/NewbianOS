@@ -33,7 +33,7 @@ done
 if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
     echo "⚠️  Missing build tools: ${MISSING_TOOLS[*]}"
     echo "   Installing build dependencies via apt..."
-    apt-get update && apt-get install -y live-build debootstrap xorriso isolinux syslinux-efi grub-efi-amd64-bin
+    apt-get update && apt-get install -y live-build debootstrap xorriso isolinux syslinux-efi grub-efi-amd64-bin grub-pc-bin grub-common dosfstools mtools squashfs-tools ca-certificates
 fi
 
 # Clean and prepare workspace
