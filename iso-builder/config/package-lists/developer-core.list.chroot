@@ -50,7 +50,7 @@ rsync
 
 # Cloud, Containers & Orchestration
 docker.io
-docker-compose-plugin
+docker-compose
 podman
 fuse3
 rclone
