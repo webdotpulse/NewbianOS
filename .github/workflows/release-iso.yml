@@ -82,6 +82,7 @@ jobs:
       - name: 🚀 Build NewbianOS Live ISO
         run: |
           sudo ./scripts/build-iso.sh
+          sudo chown -R $USER:$USER build/
 
       - name: 🔐 Prepare ISO Artifacts & Checksums
         id: prepare_artifacts

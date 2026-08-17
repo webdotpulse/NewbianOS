@@ -124,6 +124,10 @@ lb build
 
 ISO_OUTPUT=$(ls -1 "$BUILD_DIR"/*.iso 2>/dev/null | head -n 1 || true)
 if [[ -n "$ISO_OUTPUT" ]]; then
+    if [[ -n "${SUDO_USER:-}" && "$SUDO_USER" != "root" ]]; then
+        echo "🔒 Restoring build directory permissions to user $SUDO_USER..."
+        chown -R "$SUDO_USER:$(id -gn "$SUDO_USER" 2>/dev/null || echo "$SUDO_USER")" "$ROOT_DIR/build" 2>/dev/null || true
+    fi
     echo "======================================================================"
     echo "🎉 SUCCESS! NewbianOS ISO created at:"
     echo "   $ISO_OUTPUT"
