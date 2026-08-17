@@ -1,0 +1,12 @@
+# ==============================================================================
+# NewbianOS Kernel v7+ APT Pinning Preference
+# Standardize on Linux Kernel 7.x and upwards
+# ==============================================================================
+
+Package: src:linux linux-image-* linux-headers-* linux-kbuild-* linux-compiler-*
+Pin: release a=trixie-backports
+Pin-Priority: 900
+
+Package: src:linux linux-image-* linux-headers-* linux-kbuild-* linux-compiler-*
+Pin: version 7.*
+Pin-Priority: 950

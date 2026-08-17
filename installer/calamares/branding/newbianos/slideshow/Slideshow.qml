@@ -26,7 +26,7 @@ Item {
         },
         {
             title: "Figma Desktop & Developer Toolchain",
-            desc: "Figma desktop with local font daemon, KDE Plasma 6 Wayland, Starship prompt, and cutting-edge Linux 6.x OEM kernel.",
+            desc: "Figma desktop with local font daemon, KDE Plasma 6 Wayland, Starship prompt, and cutting-edge Linux Kernel 7.x+ with PREEMPT_DYNAMIC scheduling.",
             tag: "DESIGN & SPEED"
         }
     ]

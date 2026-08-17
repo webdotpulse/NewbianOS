@@ -2,7 +2,7 @@
 
 ## 1. Upstream Foundation
 - **Base Distribution**: Debian 13 ("Trixie") amd64.
-- **Kernel**: Linux 6.x OEM kernel with standard non-free firmware packages (`firmware-linux-nonfree`, `firmware-misc-nonfree`, `intel-microcode`, `amd64-microcode`).
+- **Kernel**: Linux Kernel 7.x and upwards (`linux-image-7-amd64` / `linux-image-amd64` v7+ standard) with `PREEMPT_DYNAMIC` low-latency scheduling, bcachefs support, eBPF telemetry, and standard non-free firmware packages (`firmware-linux-nonfree`, `firmware-misc-nonfree`, `intel-microcode`, `amd64-microcode`).
 - **Desktop Environment**: KDE Plasma 6 with native Wayland session (`plasma-workspace-wayland`, `kwin-wayland`).
 - **Audio & Video Subsystem**: PipeWire audio server, WirePlumber session manager, V4L2 loopback kernel module.
 - **Init System**: Systemd with user session targets.

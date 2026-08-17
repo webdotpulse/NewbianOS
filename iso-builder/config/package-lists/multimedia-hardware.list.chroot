@@ -2,7 +2,11 @@
 # NewbianOS Hardware Acceleration, Multimedia & Drivers Package List
 # ==============================================================================
 
-# Kernel Firmware
+# Linux Kernel v7+ Core, Headers & Firmware
+linux-image-amd64
+linux-headers-amd64
+linux-cpupower
+bcachefs-tools
 firmware-linux-free
 firmware-linux-nonfree
 firmware-misc-nonfree

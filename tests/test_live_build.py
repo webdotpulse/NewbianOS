@@ -47,5 +47,20 @@ class TestLiveBuildConfig(unittest.TestCase):
             hook_path = os.path.join(ROOT_DIR, "iso-builder/config/hooks/normal", h)
             self.assertTrue(os.path.exists(hook_path), f"Missing hook: {h}")
 
+    def test_kernel_v7_pinning(self):
+        """Verify Kernel v7+ APT preference pinning exists and is valid."""
+        pref_path = os.path.join(ROOT_DIR, "iso-builder/config/includes.chroot/etc/apt/preferences.d/kernel-v7.pref")
+        self.assertTrue(os.path.exists(pref_path), "Missing kernel-v7.pref")
+        with open(pref_path, "r") as f:
+            content = f.read()
+            self.assertIn("Pin: version 7.*", content)
+
+        # Check multimedia-hardware list contains linux-image-amd64 and cpupower
+        pkg_path = os.path.join(ROOT_DIR, "iso-builder/config/package-lists/multimedia-hardware.list.chroot")
+        with open(pkg_path, "r") as f:
+            pkg_content = f.read()
+            self.assertIn("linux-image-amd64", pkg_content)
+            self.assertIn("linux-headers-amd64", pkg_content)
+
 if __name__ == "__main__":
     unittest.main()

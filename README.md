@@ -9,7 +9,7 @@
   ⚡ Modern, AI-Native Linux Distribution derived from Debian & KDE Plasma 6
 ```
 
-**NewbianOS** is a next-generation, developer-ready Linux distribution built on **Debian 13 (Trixie)** and **KDE Plasma 6 (Wayland Native)**. It provides an out-of-the-box, AI-first computing environment pre-configured with **Antigravity-IDE**, **Jarvis Multimodal Voice & Vision Assistant**, **Official Google Chrome**, **Native Google Drive Workspace Sync**, and **Figma Desktop**.
+**NewbianOS** is a next-generation, developer-ready Linux distribution built on **Debian 13 (Trixie)**, **Linux Kernel 7.x+ (PREEMPT_DYNAMIC standard)**, and **KDE Plasma 6 (Wayland Native)**. It provides an out-of-the-box, AI-first computing environment pre-configured with **Antigravity-IDE**, **Jarvis Multimodal Voice & Vision Assistant**, **Official Google Chrome**, **Native Google Drive Workspace Sync**, and **Figma Desktop**.
 
 ---
 
