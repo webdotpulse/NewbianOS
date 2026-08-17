@@ -49,6 +49,8 @@ class TestLiveBuildConfig(unittest.TestCase):
             content = f.read()
             self.assertIn("--distribution trixie", content)
             self.assertIn("--architectures amd64", content)
+            self.assertIn("--system live", content)
+            self.assertIn("--initsystem systemd", content)
 
     def test_chroot_hooks(self):
         """Verify chroot hooks are present."""

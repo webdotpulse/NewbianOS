@@ -23,7 +23,8 @@ lb config noauto \
     --win32-loader false \
     --apt-recommends false \
     --apt-secure true \
-    --system systemd \
+    --system live \
+    --initsystem systemd \
     --security true \
     --mirror-bootstrap "http://deb.debian.org/debian/" \
     --mirror-binary "http://deb.debian.org/debian/" \
