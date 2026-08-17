@@ -69,7 +69,8 @@ jobs:
             git \
             make \
             ca-certificates \
-            gettext
+            gettext \
+            po4a
 
           echo "Installing official modern live-build from salsa.debian.org..."
           git clone --depth=1 https://salsa.debian.org/live-team/live-build.git /tmp/live-build

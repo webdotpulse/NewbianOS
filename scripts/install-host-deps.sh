@@ -33,7 +33,8 @@ apt-get install -y \
     git \
     make \
     ca-certificates \
-    gettext
+    gettext \
+    po4a
 
 # Ensure modern Debian live-build is installed
 if ! command -v lb &>/dev/null || ! lb config --help 2>&1 | grep -q "iso-hybrid"; then

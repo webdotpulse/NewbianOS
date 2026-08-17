@@ -73,6 +73,7 @@ class TestCIAndDocumentation(unittest.TestCase):
         self.assertIn("xorriso", content)
         self.assertIn("squashfs-tools", content)
         self.assertIn("gettext", content)
+        self.assertIn("po4a", content)
         # Ensure non-existent package mknod is not in apt install list
         self.assertNotIn("mknod \\", content)
 

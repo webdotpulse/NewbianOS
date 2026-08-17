@@ -33,7 +33,7 @@ done
 if [[ ${#MISSING_TOOLS[@]} -gt 0 ]]; then
     echo "⚠️  Missing build tools: ${MISSING_TOOLS[*]}"
     echo "   Installing build dependencies via apt..."
-    apt-get update && apt-get install -y debootstrap debian-archive-keyring xorriso isolinux syslinux-efi grub-efi-amd64-bin grub-pc-bin grub-common dosfstools mtools squashfs-tools git make ca-certificates gettext
+    apt-get update && apt-get install -y debootstrap debian-archive-keyring xorriso isolinux syslinux-efi grub-efi-amd64-bin grub-pc-bin grub-common dosfstools mtools squashfs-tools git make ca-certificates gettext po4a
 fi
 
 # Ensure modern Debian live-build is installed
