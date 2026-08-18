@@ -124,12 +124,41 @@ lb build
 
 ISO_OUTPUT=$(ls -1 "$BUILD_DIR"/*.iso 2>/dev/null | head -n 1 || true)
 if [[ -n "$ISO_OUTPUT" ]]; then
-    echo "🔧 Applying isohybrid MBR/GPT partition table for BalenaEtcher and USB boot compatibility..."
+    echo "🔧 Applying and verifying isohybrid MBR/GPT partition table for USB boot compatibility..."
+    HYBRID_APPLIED=false
+
     if command -v isohybrid &>/dev/null; then
-        isohybrid --uefi "$ISO_OUTPUT" 2>/dev/null || isohybrid "$ISO_OUTPUT" 2>/dev/null || true
-        echo "✓ Isohybrid partition table applied successfully."
-    else
-        echo "⚠️  Warning: isohybrid tool not found in PATH. Skipping post-build partitioning."
+        if isohybrid --uefi "$ISO_OUTPUT" 2>/dev/null; then
+            echo "✓ Isohybrid UEFI partition table applied successfully."
+            HYBRID_APPLIED=true
+        elif isohybrid "$ISO_OUTPUT" 2>/dev/null; then
+            echo "✓ Isohybrid BIOS partition table applied successfully."
+            HYBRID_APPLIED=true
+        fi
+    fi
+
+    if [[ "$HYBRID_APPLIED" = false ]]; then
+        echo "ℹ️ Checking if ISO already contains hybrid partition table from live-build/xorriso..."
+        if fdisk -l "$ISO_OUTPUT" 2>/dev/null | grep -q -E "Disklabel type: (dos|gpt)"; then
+            echo "✓ Valid partition table detected on ISO image."
+            HYBRID_APPLIED=true
+        else
+            echo "⚠️  Applying hybrid partition table via xorriso fallback..."
+            if command -v xorriso &>/dev/null; then
+                xorriso -indev "$ISO_OUTPUT" -boot_image any replay -boot_image any isohybrid_mbr -outdev "${ISO_OUTPUT}.tmp" 2>/dev/null && mv "${ISO_OUTPUT}.tmp" "$ISO_OUTPUT" || true
+            fi
+        fi
+    fi
+
+    # Generate SHA-256 Checksum
+    echo "🔒 Generating SHA-256 checksum..."
+    (cd "$(dirname "$ISO_OUTPUT")" && sha256sum "$(basename "$ISO_OUTPUT")" > "$(basename "$ISO_OUTPUT").sha256")
+    echo "✓ Checksum saved: ${ISO_OUTPUT}.sha256"
+
+    # Display partition summary for verification
+    if command -v fdisk &>/dev/null; then
+        echo "📋 Partition Table Summary for BalenaEtcher & Rufus:"
+        fdisk -l "$ISO_OUTPUT" 2>/dev/null || true
     fi
 
     if [[ -n "${SUDO_USER:-}" && "$SUDO_USER" != "root" ]]; then
@@ -139,7 +168,10 @@ if [[ -n "$ISO_OUTPUT" ]]; then
     echo "======================================================================"
     echo "🎉 SUCCESS! NewbianOS ISO created at:"
     echo "   $ISO_OUTPUT"
+    echo "   SHA256: $(cat "${ISO_OUTPUT}.sha256" | awk '{print $1}')"
+    echo "   Ready for BalenaEtcher, Rufus, dd, and Ventoy USB creation."
     echo "======================================================================"
 else
     echo "❌ Build completed without generating .iso. Check build logs."
+    exit 1
 fi

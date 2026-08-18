@@ -15,7 +15,8 @@ class TestLiveBuildConfig(unittest.TestCase):
             "iso-builder/config/package-lists/desktop-kde.list.chroot",
             "iso-builder/config/package-lists/developer-core.list.chroot",
             "iso-builder/config/package-lists/multimedia-hardware.list.chroot",
-            "iso-builder/config/package-lists/apps-standard.list.chroot"
+            "iso-builder/config/package-lists/apps-standard.list.chroot",
+            "iso-builder/config/package-lists/live-core.list.chroot"
         ]
 
         for p in pkg_lists:
@@ -24,6 +25,18 @@ class TestLiveBuildConfig(unittest.TestCase):
             with open(full_path, "r") as f:
                 lines = [l.strip() for l in f if l.strip() and not l.startswith("#")]
                 self.assertTrue(len(lines) > 5, f"Package list {p} should have multiple packages")
+
+    def test_live_core_packages(self):
+        """Verify presence of live-boot, live-config, and sudo in live-core list."""
+        live_core_path = os.path.join(ROOT_DIR, "iso-builder/config/package-lists/live-core.list.chroot")
+        self.assertTrue(os.path.exists(live_core_path))
+        with open(live_core_path, "r") as f:
+            content = f.read()
+            self.assertIn("live-boot", content)
+            self.assertIn("live-config", content)
+            self.assertIn("live-config-systemd", content)
+            self.assertIn("user-setup", content)
+            self.assertIn("sudo", content)
 
     def test_minimal_kde_packages(self):
         """Verify that KDE desktop packages are minimal and exclude bloatware."""
@@ -42,7 +55,7 @@ class TestLiveBuildConfig(unittest.TestCase):
             self.assertNotIn("kcalc\n", content)
 
     def test_auto_config(self):
-        """Verify auto/config file targets trixie and amd64."""
+        """Verify auto/config file targets trixie and amd64 with dual bootloader."""
         auto_config_path = os.path.join(ROOT_DIR, "iso-builder/auto/config")
         self.assertTrue(os.path.exists(auto_config_path))
         with open(auto_config_path, "r") as f:
@@ -51,6 +64,8 @@ class TestLiveBuildConfig(unittest.TestCase):
             self.assertIn("--architectures amd64", content)
             self.assertIn("--system live", content)
             self.assertIn("--initsystem systemd", content)
+            self.assertIn('syslinux,grub-efi', content)
+            self.assertIn('--bootappend-live', content)
 
     def test_chroot_hooks(self):
         """Verify chroot hooks are present."""
@@ -92,6 +107,17 @@ class TestLiveBuildConfig(unittest.TestCase):
             self.assertIn("isohybrid", content)
             self.assertIn("syslinux-utils", content)
             self.assertIn("isohybrid --uefi", content)
+
+    def test_create_usb_script_exists_and_executable(self):
+        """Verify scripts/create-usb.sh exists and is executable."""
+        script_path = os.path.join(ROOT_DIR, "scripts/create-usb.sh")
+        self.assertTrue(os.path.exists(script_path))
+        self.assertTrue(os.access(script_path, os.X_OK))
+        with open(script_path, "r") as f:
+            content = f.read()
+            self.assertIn("lsblk", content)
+            self.assertIn("dd if=", content)
+            self.assertIn("partprobe", content)
 
 if __name__ == "__main__":
     unittest.main()

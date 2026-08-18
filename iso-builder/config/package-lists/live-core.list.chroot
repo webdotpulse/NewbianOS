@@ -1,0 +1,21 @@
+# ==============================================================================
+# NewbianOS Live Bootstrap, Initramfs & System Essentials Package List
+# ==============================================================================
+
+# Live Boot & Initramfs Tools
+live-boot
+live-boot-initramfs-tools
+live-config
+live-config-systemd
+live-tools
+
+# Live User Environment & Privilege Elevation
+user-setup
+sudo
+
+# Media Ejection & Partition Helpers
+eject
+parted
+gparted
+dosfstools
+mtools

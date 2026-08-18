@@ -5,7 +5,7 @@
 SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
 
-.PHONY: all help test lint iso test-vm clean local-install
+.PHONY: all help test lint iso usb test-vm clean local-install
 
 all: help
 
@@ -16,6 +16,7 @@ help:
 	@echo "  make test          Run unit & integration test suites"
 	@echo "  make lint          Validate scripts, package lists & desktop entries"
 	@echo "  make iso           Build bootable live ISO image (requires sudo)"
+	@echo "  make usb           Write latest ISO to bootable USB drive safely"
 	@echo "  make test-vm       Launch latest ISO in QEMU/KVM virtual machine"
 	@echo "  make local-install Install packages into local user environment"
 	@echo "  make clean         Clean build artifacts and caches"
@@ -28,6 +29,7 @@ test:
 lint:
 	@echo "🔍 Linting shell scripts and chroot hooks..."
 	@bash -n scripts/build-iso.sh
+	@bash -n scripts/create-usb.sh
 	@bash -n scripts/install-host-deps.sh
 	@bash -n scripts/test-vm.sh
 	@bash -n packages/antigravity-integration/bin/antigravity-ide
@@ -50,6 +52,10 @@ lint:
 iso:
 	@echo "🚀 Initiating NewbianOS ISO Generation Pipeline..."
 	sudo ./scripts/build-iso.sh
+
+usb:
+	@echo "💾 Launching NewbianOS Bootable USB Creator..."
+	./scripts/create-usb.sh
 
 test-vm:
 	@echo "🖥️  Starting QEMU Virtual Machine..."

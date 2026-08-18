@@ -129,7 +129,10 @@ make test
 # 3. Build hybrid bootable Live ISO
 make iso
 
-# 4. Test the generated ISO in QEMU/KVM virtual machine
+# 4. Write ISO to USB flash drive safely
+make usb
+
+# 5. Test the generated ISO in QEMU/KVM virtual machine (Supports --usb and --legacy)
 make test-vm
 ```
 

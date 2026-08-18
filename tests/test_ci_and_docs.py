@@ -53,8 +53,8 @@ class TestCIAndDocumentation(unittest.TestCase):
         # Check essential methods and tools
         self.assertIn("Ventoy", content)
         self.assertIn("BalenaEtcher", content)
-        self.assertIn("isohybrid", content)
-        self.assertIn("Missing partition table", content)
+        self.assertIn("create-usb.sh", content)
+        self.assertIn("make usb", content)
         self.assertIn("dd", content)
         self.assertIn("Rufus", content)
         self.assertIn("diskutil", content)

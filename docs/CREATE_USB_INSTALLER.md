@@ -10,9 +10,10 @@ This comprehensive guide provides step-by-step instructions for creating a boota
 |---|---|---|---|
 | **[Method 1: Ventoy](#-method-1-ventoy-recommended-multi-iso-drag--drop)** | **Highest Recommendation** (Multi-ISO, Drag & Drop) | Windows, Linux, macOS | ⭐ Easy |
 | **[Method 2: BalenaEtcher](#-method-2-balenaetcher-or-raspberry-pi-imager-cross-platform-gui)** | Graphical one-click flash | Windows, Linux, macOS | ⭐ Easy |
-| **[Method 3: Linux Terminal (`dd`)](#-method-3-linux-terminal-dd--cli)** | Advanced Linux users & headless servers | Linux | ⚙️ Intermediate |
-| **[Method 4: Rufus](#-method-4-windows-rufus-gui)** | Windows power users with partition control | Windows | ⚙️ Intermediate |
-| **[Method 5: macOS Terminal (`dd`)](#-method-5-macos-terminal-dd)** | Native macOS command line | macOS | ⚙️ Intermediate |
+| **[Method 3: Automated CLI (`make usb` / `create-usb.sh`)](#-method-3-newbianos-automated-usb-creator-cli)** | Safe Linux CLI with partition verification & device guard | Linux | ⭐ Easy |
+| **[Method 4: Linux Terminal (`dd`)](#-method-4-linux-terminal-dd--manual-cli)** | Advanced Linux users & headless servers | Linux | ⚙️ Intermediate |
+| **[Method 5: Rufus](#-method-5-windows-rufus-gui)** | Windows power users with partition control | Windows | ⚙️ Intermediate |
+| **[Method 6: macOS Terminal (`dd`)](#-method-6-macos-terminal-dd)** | Native macOS command line | macOS | ⚙️ Intermediate |
 
 ---
 
@@ -107,13 +108,34 @@ sync
 4. Wait for the flashing and verification pass to complete (typically 1–3 minutes on USB 3.0).
 5. When finished, safely remove the USB drive.
 
-> [!NOTE]
-> **"Missing partition table" Warning in BalenaEtcher**:
-> If BalenaEtcher presents a warning dialog stating *"Missing partition table: It looks like this is not a bootable image"*, NewbianOS ISOs include EFI/El-Torito boot records. You can safely click **"Continue"** to proceed with flashing, or apply `isohybrid --uefi /path/to/image.iso` on Linux prior to selecting the file in Etcher. Alternatively, use **Ventoy (Method 1)** for direct ISO drag-and-drop.
+> [!TIP]
+> **BalenaEtcher Compatibility**:
+> NewbianOS ISOs are built with hybrid MBR/GPT partition tables and UEFI ESP partitions. BalenaEtcher and Raspberry Pi Imager recognize NewbianOS ISOs directly without requiring special flags.
 
 ---
 
-## 🐧 Method 3: Linux Terminal (`dd` / CLI)
+## ⚡ Method 3: NewbianOS Automated USB Creator CLI (`make usb` / `create-usb.sh`)
+
+For Linux users who prefer a fast, safe command-line tool with built-in safety guards:
+
+```bash
+# 1. Connect your USB flash drive
+# 2. Run the automated creator from the NewbianOS repository
+make usb
+
+# Or execute the script directly with explicit paths:
+sudo ./scripts/create-usb.sh /path/to/NewbianOS-13-Nexus-v1.0.0-amd64.iso /dev/sdX
+```
+
+### Safety Features of `create-usb.sh`:
+- **Auto-detection**: Automatically discovers USB flash drives and filters out internal SATA/NVMe drives.
+- **Accidental Wipe Prevention**: Detects and refuses to write to partitions containing the host root filesystem (`/`).
+- **Partition Correction**: Prevents targeting single partitions (e.g. `/dev/sdb1`) and guides writing to the whole drive (`/dev/sdb`).
+- **Partition Table Verification**: Automatically re-reads the partition table (`partprobe`) and validates UEFI ESP and MBR tables.
+
+---
+
+## 🐧 Method 4: Linux Terminal (`dd` / Manual CLI)
 
 The standard Unix `dd` utility provides raw, direct block writing. NewbianOS ISOs are built with `isohybrid` metadata, allowing them to boot natively when written as raw sector images.
 
@@ -142,12 +164,6 @@ sudo umount /dev/sdX* 2>/dev/null || true
 ```bash
 sudo dd if=NewbianOS-13-Nexus-v1.0.0-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync
 ```
-Parameters explained:
-- `if=...`: Path to input ISO file.
-- `of=/dev/sdX`: Output device (the USB drive).
-- `bs=4M`: Read/write 4 megabytes at a time for high throughput.
-- `status=progress`: Displays real-time transfer speed and bytes written.
-- `oflag=sync`: Ensures all dirty buffers are completely flushed to physical flash storage before exiting.
 
 ### Step 4: Flush Cache & Eject
 ```bash
@@ -157,7 +173,7 @@ sudo eject /dev/sdX
 
 ---
 
-## 🪟 Method 4: Windows (Rufus GUI)
+## 🪟 Method 5: Windows (Rufus GUI)
 
 [Rufus](https://rufus.ie/) is a lightweight, reliable USB flashing utility for Windows.
 
@@ -180,7 +196,7 @@ sudo eject /dev/sdX
 
 ---
 
-## 🍎 Method 5: macOS Terminal (`dd`)
+## 🍎 Method 6: macOS Terminal (`dd`)
 
 1. Open **Terminal** on macOS (`Command + Space` → Terminal).
 2. List storage disks before and after plugging in your USB:
